@@ -1,7 +1,9 @@
 import p5 from 'p5'
+import p5dom from 'p5/lib/addons/p5.dom'
 import { NeuralNet, createNet, createSeekerNet, createNetFromDNA, createSeekerNetFromDNA } from './neural'
 import { crossover } from './crossover'
 import _ from 'lodash'
+import * as p5collision from '../lib/p5.collision2d'
 
 var getRandomNumber = function(range) {
     return Math.round(Math.random()*range)
@@ -10,21 +12,25 @@ var getRandomNumber = function(range) {
 const sketch = function(p) {
 
     var population = []
-    var popcount = 50
+    var popcount = 4
     var deadcount = 0
     var diet = []
     var dietcount = 50
-    var lifespan = 1000
+    var lifespan = 3000
     var age = 0
     var generation = 0
-    var screenWidth = (screen.width - 5) / 1
-    var screenHeight = (screen.height - 5) / 1
+    var screenWidth = 800//(screen.width - 5) / 1
+    var screenHeight = 600//(screen.height - 5) / 1
     var surviveRatio = 0.95
     var isActive = true
     var spawnPlace = 'center'
-    var showDebug = false
+    var showDebug = true
     
+    var debugText = []
 
+    var log = function(txt) {
+        debugText.push(txt)
+    }
 
     class Food {
         constructor(x,y) {
@@ -186,43 +192,50 @@ const sketch = function(p) {
 
         useSeekerBrain() {
             const input = [
-                    this.position.x / p.width,
-                    this.position.y / p.height
+                    //this.position.x,
+                    //this.position.y
                 ]
                 .concat(this.sensors.map(sensor => {
                     if (sensor.target) {
-                        //return  1 / Math.pow(sensor.distToTarget / this.sensSeekRange, 2)
-                        return 1 - sensor.distToTarget / this.sensSeekRange
+                        return Math.pow(this.sensSeekRange - sensor.distToTarget, 2)
                     } else {
-                        return 0 
+                        return 1000000 
                     }
                 }))
 
             this.net.setInput(input)
             const instruction = this.net.calculate()
 
-            let maxIndex = -1
+            log('INPPUT: ' + input.toString())
+
+            //console.log(instruction)
+
+            let maxIndex = 0
             let maxWeight = -1000
+            let maxSign = 1
             let desired = false
 
             let sensors = instruction.slice(0, 7)
 
             sensors.forEach((weight, index) => {
-                if (weight > maxWeight) {
-                    maxWeight = weight
+                if (Math.abs(weight) > maxWeight) {
+                    maxWeight = Math.abs(weight)
                     maxIndex = index
+                    maxSign = weight > 0 ? 1 : -1
                 }
             })
+
+            //console.log('maxw - ', maxWeight, maxSign, maxIndex)
 
             //console.log(sensors, maxWeight, maxIndex) 
 
             desired = p5.Vector.sub(this.sensors[maxIndex].position, this.position)
 
             desired.normalize()
-            desired.mult(3)
+            desired.mult(3.5)
 
             const steer = p5.Vector.sub(desired, this.velocity)
-            steer.limit(0.1)
+            steer.limit(0.05)
 
             this.acceleration = steer
             this.activeSensor = this.sensors[maxIndex]
@@ -293,7 +306,7 @@ const sketch = function(p) {
 
                 this.useSeekerBrain()
                 //this.seekFood()
-
+                
                 this.velocity.add(this.acceleration)
                 this.collision()
                 this.position.add(this.velocity)
@@ -306,14 +319,6 @@ const sketch = function(p) {
             
             let nextX = this.position.x + this.velocity.x
             let nextY = this.position.y + this.velocity.y
-
-            // if (nextX > p.width || nextX < 0) {
-            //     this.velocity.x *= -1
-            // }
-
-            // if (nextY > p.height || nextY < 0) {
-            //     this.velocity.y *= -1
-            // }
 
             if (nextX > p.width) {
                 this.position.x = 0
@@ -468,8 +473,12 @@ const sketch = function(p) {
         generation += 1
     }
 
+    var debugConsole = false
+
     p.setup = function() {
         p.createCanvas(screenWidth, screenHeight)
+        debugConsole = p.createElement('div', 'Debug Console')
+        debugConsole.position(screenWidth + 10, 0)
         newGeneration()                
     }
 
@@ -478,7 +487,7 @@ const sketch = function(p) {
     }
 
     p.draw = function() {
-
+        debugText = []
         if (age > lifespan || deadcount > Math.round(popcount * surviveRatio)) {
             newGeneration()
         }
@@ -494,6 +503,16 @@ const sketch = function(p) {
 
         repopulate()
         age += 1
+        debugConsole.html(debugText.join('<br>'))
+    }
+
+    p.mouseClicked = function() {
+        console.log(p.dist)
+        diet.forEach(one => {
+            if (p.collidePointCircle(p.mouseX, p.mouseY, one.position.x, one.position.y, 20, p.dist)) {
+                console.log(one)
+            }
+        })
     }    
 
 }
@@ -512,7 +531,7 @@ export default class Render {
     }
 
     createGUI = () => {
-
+        
     }
 
 

@@ -41,6 +41,7 @@ export class NeuralNet {
                     sum += synapses[synIndex].srcNeuron.value * synapses[synIndex].weight
                 }
                 this.layers[level][index].value = sigmoid(sum) - this.shift
+                
             }
         }
 
@@ -49,7 +50,7 @@ export class NeuralNet {
             for(let synIndex = 0 ; synIndex < this.output[index].synapses.length ; synIndex++) {
                 sum += this.output[index].synapses[synIndex].weight * this.output[index].synapses[synIndex].srcNeuron.value
             }
-            this.output[index].value = sigmoid(sum) - this.shift
+            this.output[index].value = sum//sigmoid(sum)// - this.shift            
         }
 
         return this.output.map(one => one.value)
@@ -115,8 +116,8 @@ export function createSeekerNet() {
 
     let inputSize = 10 + 1
     let outputSize = 10
-    let deepLevels = 5
-    let levelSize = Math.round(inputSize)
+    let deepLevels = 1
+    let levelSize = 10
 
     for(let i = 0 ; i < inputSize ; i++) {
         input.push(new Neuron(1))
