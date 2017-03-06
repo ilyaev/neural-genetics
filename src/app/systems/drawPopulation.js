@@ -4,14 +4,16 @@ import { Creature } from '../types/creature'
 
 const drawPopulation = function(p, population) {
 
+    p.push()
+
     p.fill(255, 255, 255)
+    p.stroke(255,255,255)
 
     population.forEach(one => {
 
         const heading = one.velocity.heading()        
 
         p.push()
-            p.stroke(255,255,255)
             p.translate(one.position.x, one.position.y)
             p.rotate(heading)
             p.ellipse(0, 0, one.size * 2, one.size * 2)
@@ -19,6 +21,8 @@ const drawPopulation = function(p, population) {
         p.pop()
         
     })
+
+    p.pop()
 
 }
 

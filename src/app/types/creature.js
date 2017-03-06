@@ -30,6 +30,15 @@ export const makePopulation = (max, x, y) => {
     return result
 }
 
+export const makePopulationRandomPosition = (max, maxX, maxY) => {
+    let result = []
+    for(let i = 0 ; i < max ; i++) {
+        const creature = Creature(new p5.Vector(Math.random() * maxX, Math.random() * maxY))
+        result.push(creature)
+    }
+    return result
+}
+
 export const initializeVelocity = (population) => {
     return population.map(one => {
         one.velocity = new p5.Vector(Math.random() - 0.5, Math.random() - 0.5)
@@ -39,8 +48,14 @@ export const initializeVelocity = (population) => {
 
 export const initializeAcceleration = (population) => {
     return population.map(one => {
-        one.acceleration = new p5.Vector(Math.random() - 0.5, Math.random() - 0.5)
-        one.acceleration.limit(0.05)
+        one.acceleration = new p5.Vector(0,0)
         return one
+    })
+}
+
+export const neighboursCreatures = (population, positionVector, maxDistance) => {
+    return population.filter(one => {
+        const distance = p5.Vector.dist(positionVector, one.position)
+        return distance > 0 && distance < maxDistance
     })
 }

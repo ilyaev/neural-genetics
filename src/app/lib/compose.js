@@ -4,4 +4,4 @@ const compose  = (fn, ...rest) =>
     (...args) => fn(compose(...rest)(...args));
 
 
-export default compose    
+export default compose

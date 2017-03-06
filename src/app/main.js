@@ -3,7 +3,7 @@ import p5dom from 'p5/lib/addons/p5.dom'
 import config from './config'
 import { Food, makeDiet } from './types/food'
 import sceneDrawer from './systems/drawScene'
-import { Creature, makePopulation } from './types/creature'
+import { Creature, makePopulation, initializeVelocity, initializeAcceleration } from './types/creature'
 import sceneUpdater from './systems/updateScene'
 import scene from './scene'
 
@@ -35,7 +35,8 @@ const sketch = function(p) {
     }
 
     p.mouseClicked = function() {
-
+        initializeAcceleration(scene.population)
+        initializeVelocity(scene.population)
     }
 
 }
