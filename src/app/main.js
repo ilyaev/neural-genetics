@@ -3,7 +3,7 @@ import p5dom from 'p5/lib/addons/p5.dom'
 import config from './config'
 import { Food, makeDiet } from './types/food'
 import sceneDrawer from './systems/drawScene'
-import { Creature, makePopulation, initializeVelocity, initializeAcceleration } from './types/creature'
+import { Creature, makePopulation, initializeVelocity, initializeAcceleration, initializeNeural } from './types/creature'
 import sceneUpdater from './systems/updateScene'
 import scene from './scene'
 
@@ -30,8 +30,17 @@ const sketch = function(p) {
         drawScene()
     }
 
-    p.keyPressed = function() {
-        scene.active = !scene.active
+    p.keyPressed = function(event) {
+        switch (event.key) {
+            case "r":
+                scene.active = true
+                initializeNeural(scene.population)
+                break
+            default:
+                scene.active = !scene.active
+
+        }
+        
     }
 
     p.mouseClicked = function() {

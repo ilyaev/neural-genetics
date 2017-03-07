@@ -1,18 +1,26 @@
 import config from './config'
 import { Food, makeDiet } from './types/food'
-import { Creature, makePopulation, initializeVelocity, initializeAcceleration, makePopulationRandomPosition } from './types/creature'
+import { 
+    Creature, 
+    makePopulation, 
+    initializeVelocity, 
+    initializeAcceleration, 
+    initializeNeural,
+    makePopulationRandomPosition 
+} from './types/creature'
 import compose from './lib/compose'
 
 
 const diet = makeDiet(config.foodcount, config.width, config.height)
 
-// const population = compose(
-//     initializeVelocity,
-//     initializeAcceleration,
-//     makePopulation
-// ) (config.popcount, config.center.x, config.center.y)
+const populationNeural = compose(
+    initializeNeural,
+    initializeVelocity,
+    initializeAcceleration,
+    makePopulation
+) (config.popcount, config.center.x, config.center.y)
 
-const population = compose(
+const populationFlocking = compose(
     initializeVelocity,
     initializeAcceleration,
     makePopulationRandomPosition
@@ -20,7 +28,7 @@ const population = compose(
 
 const scene = {
     diet,
-    population,
+    population: config.mode == 'flocking' ? populationFlocking : populationNeural,
     config,
     canvas: null,
     active: true

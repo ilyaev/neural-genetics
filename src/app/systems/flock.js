@@ -3,8 +3,8 @@ import p5 from 'p5'
 
 const flock = (scene) => {
 
-    const seek = (one, target) => {
-        const desired = p5.Vector.sub(target, one.position)
+    const seek = (creature, target) => {
+        const desired = p5.Vector.sub(target, creature.position)
         desired.normalize()
         desired.mult(scene.config.flocking.maxSpeed)
 
@@ -15,15 +15,15 @@ const flock = (scene) => {
 
     const cohesion = (creature) => {
         const result = neighboursCreatures(scene.population, creature.position, scene.config.flocking.cohesionRadius)
-            .reduce((sume, next) => {
-                sum.v.add(creature.position)
+            .reduce((sum, next) => {
+                sum.v.add(next.position)
                 sum.c += 1
                 return sum
             }, {v: new p5.Vector(0,0), c: 0})
 
         if (result.c > 0) {
             result.v.div(result.c)
-            return seek(one, result.v)
+            return seek(creature, result.v)
         } else {
             return result.v
         }
@@ -88,14 +88,15 @@ const flock = (scene) => {
     }
 
     const applyForces = (creature) => {
-        creature.velocity.add(align(creature))
-        creature.velocity.add(separate(creature))
-        creature.velocity.add(cohesion(creature))
+        creature.velocity.add(align(creature).mult(scene.config.flocking.multipliers.align))
+        creature.velocity.add(separate(creature).mult(scene.config.flocking.multipliers.separate))
+        creature.velocity.add(cohesion(creature).mult(scene.config.flocking.multipliers.cohesion))
         return creature
     }
 
     return () => ({
         align,
+        seek,
         applyForces
     })
 }

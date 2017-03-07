@@ -6,9 +6,12 @@ import updateFood from './updateFood'
 
 const update = function(scene) {
 
+    const populationUpdater = updatePopulation(scene)
+    const foodUpdater = updateFood(scene)
+
     return () => {
-        updatePopulation(scene)()
-        updateFood(scene)()
+        populationUpdater()
+        foodUpdater()
     }
 
 }

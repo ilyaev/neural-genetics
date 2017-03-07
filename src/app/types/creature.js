@@ -1,4 +1,5 @@
 import p5 from 'p5'
+import NeuralNet from './neural'
 
 export const Sensor = (host, position) => {
     return {
@@ -17,6 +18,7 @@ export const Creature = (position) => {
         health: 100,
         sensors: [],
         velocity: false,
+        net: {},
         acceleration: false
     }
 }
@@ -57,5 +59,12 @@ export const neighboursCreatures = (population, positionVector, maxDistance) => 
     return population.filter(one => {
         const distance = p5.Vector.dist(positionVector, one.position)
         return distance > 0 && distance < maxDistance
+    })
+}
+
+export const initializeNeural = (population) => {
+    return population.map(one => {
+        one.net = new NeuralNet()
+        return one
     })
 }
