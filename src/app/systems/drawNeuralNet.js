@@ -1,6 +1,17 @@
+let counter = -1
 
+const drawNeuralNet = (net, caption, canvas) => {
+    if (typeof canvas.counter == 'undefined') {
+        canvas.counter = -1
+    }
 
-const drawNeuralNet = (net, canvas) => {
+    canvas.counter++
+
+    if (canvas.counter < 30 && canvas.counter > 0) {
+        return
+    }
+
+    canvas.counter = 0
 
     const colCount = 2 + net.hidden.length
     const colWidth = canvas.width / colCount
@@ -11,6 +22,9 @@ const drawNeuralNet = (net, canvas) => {
     const nodeDiameter = colWidth / 3.2
 
     canvas.stroke(255)
+    canvas.background(0)
+    canvas.noFill()
+    canvas.rect(0, 0, canvas.width - 1, canvas.height - 1)
 
     const layers = [net.input].concat(net.hidden).concat([net.output])
     
@@ -42,11 +56,11 @@ const drawNeuralNet = (net, canvas) => {
                 color: node.value > 0 ? canvas.lerpColor(colorFrom, colorTo, node.value) : canvas.lerpColor(colorFromNegative, colorToNegative, Math.abs(node.value))
             })
 
-            const textSize = nodeSize / 3
+            const textSize = nodeSize / 2.2
             const label = node.value.toString().substr(0,4)
 
             labels.push({
-                params: [label, cX - textSize, cY - textSize * 1.7],
+                params: [label, cX - textSize, cY - textSize * 1.4],
                 size: textSize
             })
 
@@ -69,11 +83,20 @@ const drawNeuralNet = (net, canvas) => {
         canvas.ellipse(...one.params)
     })
 
-    canvas.fill(255)
+    canvas.fill(200)
+    canvas.stroke(200)
     labels.forEach(one => {
         canvas.textSize(one.size)
         canvas.text(...one.params)
     })
+
+    if (caption) {
+        const tSize = canvas.height / 20
+        canvas.textSize(tSize)
+        canvas.fill(255)
+        canvas.stroke(255)
+        canvas.text(caption, canvas.width - (tSize / 2) * caption.length, tSize)//canvas.width - caption.length * 33, canvas.height - 50)
+    }
 
 }
 

@@ -16,9 +16,36 @@ const drawPopulation = function(p, population) {
         p.push()
             p.translate(one.position.x, one.position.y)
             p.rotate(heading)
-            p.ellipse(0, 0, one.size * 2, one.size * 2)
-            p.line(0,0, one.size + 20, 0)
+            
+            const size = (one.size + one.score) * 2
+
+            if (one.selected) {
+                p.fill(0, 125, 0)
+                p.ellipse(0, 0, size * 1.5, size * 1.5)
+                p.fill(0, 255, 0)
+                p.fill(0, 255, 0, Math.min((one.health / 300) * 255, 255))
+            } else {
+                p.fill(255, 255, 255, Math.min((one.health / 300) * 255, 255))
+            }
+
+            p.ellipse(0, 0, size, size)
+            if (one.health > 0) {
+                p.line(0,0, one.size + 20, 0)
+            }
         p.pop()
+
+        if (one.selected) {
+            p.push()
+            if (one.targetCreature) {
+                p.stroke(255, 255, 255)
+                p.line(one.position.x, one.position.y, one.targetCreature.position.x, one.targetCreature.position.y)
+            }
+            if (one.targetFood) {
+                p.stroke(255, 0, 0)
+                p.line(one.position.x, one.position.y, one.targetFood.position.x, one.targetFood.position.y)
+            }
+            p.pop()
+        }
         
     })
 

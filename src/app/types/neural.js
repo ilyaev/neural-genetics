@@ -46,14 +46,6 @@ const NeuralNet = (inputSize = 3, hiddenLayers = 1, hiddenLayersSize = 3, output
     }
 }
 
-const RandomWeightNeuralNet = () => NeuralNet(
-    2, // Input Size
-    2, // Hidden Layers number
-    3, // Hidden Layer size
-    2, // Output Size
-    () => Math.random() * 2 - 1
-)
-
 export const sigmoid = (z) => {
   return 1 / (1 + Math.exp(-z))
 }
@@ -78,5 +70,40 @@ export const calculateNetOutput = (net) => {
     net.output.forEach(calculateNeuronValue)
 
 }
+
+export const serializeNet = (net) => {
+    return [
+        net.hidden.reduce((sum, next) => {
+            next.forEach(one => sum.push(one))
+            return sum
+        }, []),
+        net.output
+    ]
+    .reduce((sum, next) => {
+        next.forEach(one => sum.push(one))
+        return sum
+    }, [])
+    .reduce((sum, next) => {
+        next.synapses.forEach(one => sum.push(one.weight))
+        return sum
+    }, [])
+
+}
+
+export const populateNet = (net, data) => {
+
+    net.hidden.forEach(layer => layer.forEach(node => node.synapses.forEach(synapse => synapse.weight = data.shift())))
+    net.output.forEach(node => node.synapses.forEach(synapse => synapse.weight = data.shift()))
+
+    return net
+}
+
+const RandomWeightNeuralNet = () => NeuralNet(
+    10, // Input Size
+    1, // Hidden Layers number
+    8, // Hidden Layer size
+    3, // Output Size
+    () => Math.random() * 2 - 1
+)
 
 export default RandomWeightNeuralNet

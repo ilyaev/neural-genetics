@@ -5,16 +5,19 @@ import { Food, makeDiet } from './types/food'
 import sceneDrawer from './systems/drawScene'
 import { Creature, makePopulation, initializeVelocity, initializeAcceleration, initializeNeural } from './types/creature'
 import sceneUpdater from './systems/updateScene'
+import mouseSelector from './systems/mouseSelection'
 import scene from './scene'
 
 
 const drawScene = sceneDrawer(scene)
 const updateScene = sceneUpdater(scene)
+const mouseSelection = mouseSelector(scene)()
 
 const sketch = function(p) {
 
     p.setup = function() {
         p.createCanvas(config.width, config.height)
+        scene.nnCanvas = p.createGraphics(600, 500)
         scene.canvas = p
     }
 
@@ -36,6 +39,18 @@ const sketch = function(p) {
                 scene.active = true
                 initializeNeural(scene.population)
                 break
+            case "n":
+                scene.ui.neuralNet = !scene.ui.neuralNet
+                break
+            case "s":
+                console.log('SCENE', scene)
+                break
+            case "l":
+                console.log('LASTGEN', scene.simulation.last)
+                break
+            case "c":
+                console.clear()
+                break
             default:
                 scene.active = !scene.active
 
@@ -43,9 +58,9 @@ const sketch = function(p) {
         
     }
 
-    p.mouseClicked = function() {
-        initializeAcceleration(scene.population)
-        initializeVelocity(scene.population)
+    p.mouseClicked = function(event, a, b) {
+        mouseSelection.pointSelect(new p5.Vector(event.x, event.y))
+        scene.active = true
     }
 
 }

@@ -7,10 +7,16 @@ import drawNeuralNet from './drawNeuralNet'
 const draw = function(scene) {
 
     return () => {
-        // drawFood(scene.canvas, scene.diet)
-        // drawPopulation(scene.canvas, scene.population)
 
-        drawNeuralNet(scene.population[0].net, scene.canvas)
+        
+        
+        if (scene.selection.creature && scene.ui.neuralNet) {
+            drawNeuralNet(scene.selection.creature.net, 'ID: ' + scene.selection.creature.id, scene.nnCanvas)
+            scene.canvas.image(scene.nnCanvas, 10, 10)
+        }
+
+        drawPopulation(scene.canvas, scene.population)
+        drawFood(scene.canvas, scene.diet)
 
     }    
 

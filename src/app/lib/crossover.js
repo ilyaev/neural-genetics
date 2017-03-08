@@ -1,4 +1,4 @@
-export function crossover(male, female) {
+const crossover = (male, female) => {
     let len = Math.round(Math.random()*(male.length / 2)) + 1
     let maleFirst = true
 
@@ -43,3 +43,6 @@ var shiftFromArray = function(array, count) {
     }
     return result
 }
+
+
+export default crossover

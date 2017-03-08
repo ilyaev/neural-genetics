@@ -4,7 +4,8 @@ export const Food = (position = null, size = 5) => {
 
     return {
         position,
-        size
+        size,
+        eaten: false
     }
 
 }
@@ -18,4 +19,24 @@ export const makeDiet = (max, maxX, maxY) => {
     }
 
     return result
+}
+
+export const nearestFood = (diet, position) => {
+    return diet
+        .filter(food => food.eaten ? false : true)
+        .map(food => ({
+            dist: p5.Vector.dist(food.position, position),
+            food
+        }))
+        .sort((a,b) => a.dist > b.dist ? 1 : -1)
+        [0].food
+}
+
+export const resupplyFood = (diet, maxX, maxY) => {
+    diet
+        .filter(food => food.eaten ? true : false)
+        .forEach(food => {
+            food.position = new p5.Vector(Math.random() * maxX, Math.random() * maxY)
+            food.eaten = false
+        })
 }

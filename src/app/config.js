@@ -6,7 +6,7 @@ const mode = 'neural'
 const configuration = {
     mode: 'flocking',
     popcount: 100,
-    foodcount: 20,
+    foodcount: 50,
     popspawn: 'random',
     width: window.innerWidth,
     height: window.innerHeight,
@@ -14,7 +14,8 @@ const configuration = {
         x: 0,
         y: 0
     },
-    
+    maxSpeed: 3,
+    steeringForce: 0.5,
     flocking: {
         alignRadius: 150,
         maxSpeed: 8,
@@ -26,6 +27,9 @@ const configuration = {
             align:  1,
             cohesion: 1
         }
+    },
+    simulation: {
+        lifespan: 1000
     }
 
 }
@@ -34,7 +38,7 @@ configuration.center = new p5.Vector(configuration.width / 2, configuration.heig
 
 const nnConfiguration = Object.assign({}, configuration, {
     mode: 'neural',
-    popcount: 1,
+    popcount: 100,
     popspawn: 'center'
 })
 

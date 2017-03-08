@@ -31,6 +31,24 @@ const scene = {
     population: config.mode == 'flocking' ? populationFlocking : populationNeural,
     config,
     canvas: null,
+    nnCanvas: null,
+    selection: {
+        creature: false
+    },
+    simulation: {
+        last: {
+            generation: 1,
+            eaten: 0,
+            starved: 0,
+            maxFitness: 0,
+            meanFitntess: 0
+        },
+        generation: 1,
+        stats: []
+    },
+    ui: {
+        neuralNet: true
+    },
     active: true
 }
 

@@ -10,7 +10,7 @@ const update = function(scene) {
 
     let flock = Flock(scene)()
     let collision = Collision(scene)()
-    let ai = AI(scene)
+    let ai = AI(scene)()
 
     const seekMouse = (one) => {
         const seekMouseForce = flock.seek(one, new p5.Vector(scene.canvas.mouseX, scene.canvas.mouseY))
@@ -24,40 +24,35 @@ const update = function(scene) {
 
     return () => {
 
-        scene.population.forEach(one => {
-            one.acceleration.mult(0)
-
-            switch (scene.config.mode) {
-                case 'flocking':
-                    compose(
-                        collision.borderRollOver,
-                        seekMouse,
-                        flock.applyForces
-                    )(one)
-                    break
-                case 'neural':
-                    const nai = ai(one.net)
-                    nai.setInput([
-                        (scene.canvas.mouseX - scene.config.center.x) / (scene.canvas.width / 2),
-                        (scene.canvas.mouseY - scene.config.center.y)  / (scene.canvas.height / 2)
-                    ])
-                    const output = nai.calculate()
-                    output.forEach(value => {
-                        if (value > maxOutput) {
-                            maxOutput = value
-                        }
-                        if (value < minOutput) {
-                            minOutput = value
-                        }
-                    })
-                    break
-            }
-
-            
-
-            one.velocity.add(one.acceleration)
-            one.position.add(one.velocity)
-        })
+        scene.population
+            .filter(creature => creature.health > 0 ? true : false)
+            .forEach(one => {
+                one.acceleration.mult(0)
+                one.age++
+                one.health--
+                if (one.health <= 0) {
+                    scene.simulation.last.starved++
+                }
+                switch (scene.config.mode) {
+                    case 'flocking':
+                        compose(
+                            collision.borderRollOver,
+                            seekMouse,
+                            flock.applyForces
+                        )(one)
+                        one.velocity.add(one.acceleration)
+                        one.velocity.limit(scene.config.maxSpeed)
+                        break
+                    case 'neural':
+                        compose(
+                            //collision.borderKill,
+                            collision.borderRollOver,
+                            ai.xyBrain
+                        )(one)
+                        break
+                }
+                one.position.add(one.velocity)
+            })
     }
 }
 
