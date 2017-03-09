@@ -3,6 +3,7 @@ import { Food } from '../types/food'
 import drawPopulation from './drawPopulation'
 import drawFood from './drawFood'
 import drawNeuralNet from './drawNeuralNet'
+import drawGenetics from './drawGenetics'
 
 const draw = function(scene) {
 
@@ -15,8 +16,17 @@ const draw = function(scene) {
             scene.canvas.image(scene.nnCanvas, 10, 10)
         }
 
-        drawPopulation(scene.canvas, scene.population)
+        if (scene.ui.genetics) {
+            drawGenetics(scene.genCanvas, scene)
+            scene.canvas.image(scene.genCanvas, 0, scene.canvas.height - scene.genCanvas.height)
+        }
+        
+        
+
         drawFood(scene.canvas, scene.diet)
+        drawPopulation(scene.canvas, scene.population)
+
+
 
     }    
 

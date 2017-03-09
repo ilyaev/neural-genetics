@@ -126,6 +126,7 @@ const simulation = (scene) => {
         scene.simulation.generation++
 
         scene.simulation.stats.push(Object.assign({}, scene.simulation.last))
+        scene.diet = scene.diet.slice(0, scene.config.foodcount)
 
         scene.simulation.last.eaten = 0
         scene.simulation.last.starved = 0
@@ -135,6 +136,8 @@ const simulation = (scene) => {
     const checkCounter = () => {
         counter++
         age++
+        scene.simulation.last.age = age
+        scene.simulation.last.lifespan = lifespan
         if (counter < 30) {
             return false
         }

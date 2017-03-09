@@ -1,3 +1,8 @@
+import * as Reducers from '../lib/reducers'
+
+const concatWeightToArray = Reducers.concatKeyToArray('weight')
+const concatSynapsesToArray = Reducers.concatKeyToArray('synapses')
+
 const Neuron = (value = 0, synapses = [], bias = 1) => {
     return {
         value,
@@ -73,21 +78,12 @@ export const calculateNetOutput = (net) => {
 
 export const serializeNet = (net) => {
     return [
-        net.hidden.reduce((sum, next) => {
-            next.forEach(one => sum.push(one))
-            return sum
-        }, []),
+        net.hidden.reduce(Reducers.concatToArray, []),
         net.output
     ]
-    .reduce((sum, next) => {
-        next.forEach(one => sum.push(one))
-        return sum
-    }, [])
-    .reduce((sum, next) => {
-        next.synapses.forEach(one => sum.push(one.weight))
-        return sum
-    }, [])
-
+    .reduce(Reducers.concatToArray, [])
+    .reduce(concatSynapsesToArray, [])
+    .reduce(concatWeightToArray, [])
 }
 
 export const populateNet = (net, data) => {

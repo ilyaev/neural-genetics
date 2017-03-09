@@ -1,5 +1,5 @@
 import p5 from 'p5'
-import { Food } from '../types/food'
+import { Food, spawnFood } from '../types/food'
 import { Creature, neighboursCreatures } from '../types/creature'
 import compose from '../lib/compose'
 import Flock from './flock'
@@ -32,26 +32,28 @@ const update = function(scene) {
                 one.health--
                 if (one.health <= 0) {
                     scene.simulation.last.starved++
+                    spawnFood(scene.diet, one.position.x, one.position.y)
+                } else {
+                    switch (scene.config.mode) {
+                        case 'flocking':
+                            compose(
+                                collision.borderRollOver,
+                                seekMouse,
+                                flock.applyForces
+                            )(one)
+                            one.velocity.add(one.acceleration)
+                            one.velocity.limit(scene.config.maxSpeed)
+                            break
+                        case 'neural':
+                            compose(
+                                //collision.borderKill,
+                                collision.borderRollOver,
+                                ai.xyBrain
+                            )(one)
+                            break
+                    }
+                    one.position.add(one.velocity)
                 }
-                switch (scene.config.mode) {
-                    case 'flocking':
-                        compose(
-                            collision.borderRollOver,
-                            seekMouse,
-                            flock.applyForces
-                        )(one)
-                        one.velocity.add(one.acceleration)
-                        one.velocity.limit(scene.config.maxSpeed)
-                        break
-                    case 'neural':
-                        compose(
-                            //collision.borderKill,
-                            collision.borderRollOver,
-                            ai.xyBrain
-                        )(one)
-                        break
-                }
-                one.position.add(one.velocity)
             })
     }
 }

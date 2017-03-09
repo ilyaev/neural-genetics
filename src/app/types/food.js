@@ -32,11 +32,24 @@ export const nearestFood = (diet, position) => {
         [0].food
 }
 
-export const resupplyFood = (diet, maxX, maxY) => {
+export const resupplyFood = (diet, maxX, maxY, foodcount) => {
+
+    // const supplyCount = diet.filter(food => food.eaten ? false : true).length
+
+    // if (supplyCount > foodcount) {
+    //     console.log('purge!', supplyCount)
+    //     diet = diet.filter(food => food.eaten ? false : true)
+    //     console.log(diet.length)
+    // }
+
     diet
         .filter(food => food.eaten ? true : false)
         .forEach(food => {
             food.position = new p5.Vector(Math.random() * maxX, Math.random() * maxY)
             food.eaten = false
         })
+}
+
+export const spawnFood = (diet, x, y) => {
+    diet.push(Food(new p5.Vector(x,y)))
 }

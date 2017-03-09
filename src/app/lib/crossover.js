@@ -10,7 +10,7 @@ const crossover = (male, female) => {
         let fPart = shiftFromArray(female, len)
 
         if (Math.random() < 0.005) {
-            const mutant = Math.random() - 0.5
+            const mutant = Math.random() * 2 - 1
             const mutPlace = Math.round(Math.random()*len)
             if (Math.random() < 0.5) {                
                 mPart[mutPlace] = mutant
@@ -28,7 +28,7 @@ const crossover = (male, female) => {
             childTwo = childTwo.concat(mPart)
             maleFirst = true
         }
-        len = Math.round(Math.random()*(male.length / 2)) + 1
+        //len = Math.round(Math.random()*(male.length / 2)) + 1
     }
     return [childOne, childTwo]
 }

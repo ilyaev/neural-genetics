@@ -56,7 +56,7 @@ const ai = (scene) => {
                 food.eaten = true
                 scene.simulation.last.eaten++
                 creature.score += 1
-                creature.health += 300
+                creature.health += 150
             } else {
                 desiredFood = p5.Vector.sub(food.position, creature.position).setMag(1)
             }

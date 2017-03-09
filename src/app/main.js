@@ -18,6 +18,7 @@ const sketch = function(p) {
     p.setup = function() {
         p.createCanvas(config.width, config.height)
         scene.nnCanvas = p.createGraphics(600, 500)
+        scene.genCanvas = p.createGraphics(config.width, Math.round(config.height * 0.2))
         scene.canvas = p
     }
 

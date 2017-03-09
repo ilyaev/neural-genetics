@@ -30,6 +30,10 @@ const configuration = {
     },
     simulation: {
         lifespan: 1000
+    },
+    colors: {
+        food: [255, 0, 0],
+        creature: [255, 255, 255]
     }
 
 }

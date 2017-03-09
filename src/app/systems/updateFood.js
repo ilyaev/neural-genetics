@@ -5,7 +5,7 @@ import { Creature } from '../types/creature'
 const update = function(scene) {
 
     return () => {
-        resupplyFood(scene.diet, scene.config.width, scene.config.height)    
+        resupplyFood(scene.diet, scene.config.width, scene.config.height, scene.config.foodcount)    
     }
     
 }

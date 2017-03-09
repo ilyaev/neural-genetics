@@ -32,6 +32,7 @@ const scene = {
     config,
     canvas: null,
     nnCanvas: null,
+    genCanvas: null,
     selection: {
         creature: false
     },
@@ -41,13 +42,16 @@ const scene = {
             eaten: 0,
             starved: 0,
             maxFitness: 0,
-            meanFitntess: 0
+            meanFitness: 0,
+            age: 0,
+            lifespan: 1000
         },
         generation: 1,
         stats: []
     },
     ui: {
-        neuralNet: true
+        neuralNet: true,
+        genetics: true
     },
     active: true
 }

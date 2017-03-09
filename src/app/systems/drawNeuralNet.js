@@ -1,4 +1,3 @@
-let counter = -1
 
 const drawNeuralNet = (net, caption, canvas) => {
     if (typeof canvas.counter == 'undefined') {
