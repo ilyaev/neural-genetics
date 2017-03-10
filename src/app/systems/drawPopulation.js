@@ -9,6 +9,12 @@ const drawPopulation = function(p, population) {
     p.fill(255, 255, 255)
     p.stroke(255,255,255)
 
+    let pColor = {
+        normal: [255, 255, 255],
+        selected: [0, 255, 0],
+        boost: [0, 0, 255]
+    }
+
     population.forEach(one => {
 
         const heading = one.velocity.heading()        
@@ -18,14 +24,18 @@ const drawPopulation = function(p, population) {
             p.rotate(heading)
             
             const size = (one.size + one.score) * 2
+            const healthAlpha = Math.min((one.health / 300) * 255, 255)
 
             if (one.selected) {
                 p.fill(0, 125, 0)
                 p.ellipse(0, 0, size * 1.5, size * 1.5)
-                p.fill(0, 255, 0)
-                p.fill(0, 255, 0, Math.min((one.health / 300) * 255, 255))
+                p.fill(...pColor.selected, healthAlpha)
             } else {
-                p.fill(255, 255, 255, Math.min((one.health / 300) * 255, 255))
+                if (one.speed > 1) {
+                    p.fill(...pColor.boost, healthAlpha)
+                } else {
+                    p.fill(...pColor.normal, healthAlpha)
+                }
             }
 
             p.ellipse(0, 0, size, size)

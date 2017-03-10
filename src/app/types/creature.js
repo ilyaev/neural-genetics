@@ -23,6 +23,7 @@ export const Creature = (position) => {
         net: {},
         fitness: 0,
         maxSpeed: 8,
+        speed: 1,
         targetCreature: false,
         targetFood: false,
         acceleration: false

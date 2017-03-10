@@ -95,7 +95,7 @@ export const populateNet = (net, data) => {
 }
 
 const RandomWeightNeuralNet = () => NeuralNet(
-    10, // Input Size
+    11, // Input Size
     1, // Hidden Layers number
     8, // Hidden Layer size
     3, // Output Size

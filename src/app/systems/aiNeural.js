@@ -72,7 +72,8 @@ const ai = (scene) => {
             nearest ? 1 - p5.Vector.dist(nearest.position, creature.position) / maxDistance : 0,
             desiredFood.x,
             desiredFood.y,
-            food ? 1 - distToFood / maxDistance : 0
+            food ? 1 - distToFood / maxDistance : 0,
+            Math.min(creature.age, 1200) / 600 - 1
         ]
 
 
@@ -80,19 +81,17 @@ const ai = (scene) => {
         const output = calculate(creature.net)
         let [vX, vY, speed] = output
 
-        speed = 1
-
-        creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce)
-        
-        if (Math.abs(speed) > 0.2) {
-            if (speed > 0) {
-                creature.velocity.sub(creature.acceleration)
-            } else {
-                creature.velocity.add(creature.acceleration)
-            }
+        if (Math.abs(speed > 0.5)) {
+            speed = 2
+        } else {
+            speed = 1
         }
 
-        creature.velocity.limit(scene.config.maxSpeed * Math.max(0.2, Math.abs(speed)))
+        creature.speed = speed
+
+        creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        creature.velocity.add(creature.acceleration)
+        creature.velocity.limit(scene.config.maxSpeed * speed)
         
         return creature
     }

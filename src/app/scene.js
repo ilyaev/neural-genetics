@@ -28,6 +28,7 @@ const populationFlocking = compose(
 
 const scene = {
     diet,
+    timeScale: 1,
     population: config.mode == 'flocking' ? populationFlocking : populationNeural,
     config,
     canvas: null,

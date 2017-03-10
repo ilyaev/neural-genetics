@@ -29,7 +29,7 @@ const update = function(scene) {
             .forEach(one => {
                 one.acceleration.mult(0)
                 one.age++
-                one.health--
+                one.health -= one.speed
                 if (one.health <= 0) {
                     scene.simulation.last.starved++
                     spawnFood(scene.diet, one.position.x, one.position.y)

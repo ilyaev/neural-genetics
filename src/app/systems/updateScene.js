@@ -11,11 +11,11 @@ const update = function(scene) {
     const foodUpdater = updateFood(scene)
     const geneticUpdater = genetics(scene)()
 
-    let scale = 1
+    
 
     return () => {
 
-        for(let  i = 0 ; i < scale ; i++) {
+        for(let  i = 0 ; i < scene.timeScale ; i++) {
             populationUpdater()
             foodUpdater()
             geneticUpdater.simulate()

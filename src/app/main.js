@@ -52,6 +52,10 @@ const sketch = function(p) {
             case "c":
                 console.clear()
                 break
+            case "z":
+                scene.timeScale = scene.timeScale == 1 ? 50 : 1
+                console.log('scale - ', scene.timeScale + 'x')
+                break;
             default:
                 scene.active = !scene.active
 
