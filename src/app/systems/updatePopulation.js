@@ -5,6 +5,8 @@ import compose from '../lib/compose'
 import Flock from './flock'
 import Collision from './collision'
 import AI from './aiNeural'
+import * as Cluster from '../types/cluster'
+import curry from '../lib/curry'
 
 const update = function(scene) {
 
@@ -20,6 +22,8 @@ const update = function(scene) {
 
     let minOutput = 1
     let maxOutput = 0
+
+    const syncWithCluster = curry(Cluster.syncItemWithClusters)(scene.clusters)
 
 
     return () => {
@@ -46,8 +50,8 @@ const update = function(scene) {
                             break
                         case 'neural':
                             compose(
-                                //collision.borderKill,
                                 collision.borderRollOver,
+                                syncWithCluster,
                                 ai.xyBrain
                             )(one)
                             break

@@ -50,6 +50,10 @@ const drawPopulation = function(p, population) {
                 p.stroke(255, 255, 255)
                 p.line(one.position.x, one.position.y, one.targetCreature.position.x, one.targetCreature.position.y)
             }
+            if (one.targetCluster) {
+                p.stroke(0, 255, 0)
+                p.line(one.position.x, one.position.y, one.targetCluster.position.x, one.targetCluster.position.y)
+            }
             if (one.targetFood) {
                 p.stroke(255, 0, 0)
                 p.line(one.position.x, one.position.y, one.targetFood.position.x, one.targetFood.position.y)

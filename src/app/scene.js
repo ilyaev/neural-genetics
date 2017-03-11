@@ -9,6 +9,7 @@ import {
     makePopulationRandomPosition 
 } from './types/creature'
 import compose from './lib/compose'
+import * as Cluster from './types/cluster'
 
 
 const diet = makeDiet(config.foodcount, config.width, config.height)
@@ -30,6 +31,8 @@ const scene = {
     diet,
     timeScale: 1,
     population: config.mode == 'flocking' ? populationFlocking : populationNeural,
+    clusters: [],
+    foodClusters: [],
     config,
     canvas: null,
     nnCanvas: null,
@@ -51,10 +54,15 @@ const scene = {
         stats: []
     },
     ui: {
-        neuralNet: true,
+        neuralNet: false,
         genetics: true
     },
     active: true
 }
+
+Cluster.buildClusters(scene.clusters, scene.population, config.width, config.height, config.clusterSize)
+
+Cluster.buildClusters(scene.foodClusters, scene.diet, config.width, config.height, config.clusterSize)
+diet.forEach(one => Cluster.syncItemWithClusters(scene.foodClusters, one))
 
 export default scene

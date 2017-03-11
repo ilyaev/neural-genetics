@@ -15,7 +15,7 @@ const configuration = {
         y: 0
     },
     maxSpeed: 3,
-    steeringForce: 0.5,
+    steeringForce: 0.1,
     flocking: {
         alignRadius: 150,
         maxSpeed: 8,
@@ -38,6 +38,7 @@ const configuration = {
 
 }
 
+configuration.clusterSize = Math.max(Math.ceil(Math.max(configuration.width, configuration.height) / 10), 100)
 configuration.center = new p5.Vector(configuration.width / 2, configuration.height / 2)
 
 const nnConfiguration = Object.assign({}, configuration, {

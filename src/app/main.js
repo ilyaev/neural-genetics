@@ -8,10 +8,10 @@ import sceneUpdater from './systems/updateScene'
 import mouseSelector from './systems/mouseSelection'
 import scene from './scene'
 
-
 const drawScene = sceneDrawer(scene)
 const updateScene = sceneUpdater(scene)
 const mouseSelection = mouseSelector(scene)()
+
 
 const sketch = function(p) {
 

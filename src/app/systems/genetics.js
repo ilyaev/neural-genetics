@@ -3,6 +3,8 @@ import compose from '../lib/compose'
 import p5 from 'p5'
 import NeuralNet, { serializeNet, populateNet } from '../types/neural'
 import doCrossover from '../lib/crossover'
+import { replace as ReplaceArray } from '../lib/array'
+
 
 const simulation = (scene) => {
 
@@ -121,12 +123,14 @@ const simulation = (scene) => {
             Creature.initializeAcceleration
         )(population)
 
-        scene.population = population
+        ReplaceArray(scene.population, population)
+
         scene.selection.creature = false
         scene.simulation.generation++
 
         scene.simulation.stats.push(Object.assign({}, scene.simulation.last))
-        scene.diet = scene.diet.slice(0, scene.config.foodcount)
+        const tmp = scene.diet.slice(0, scene.config.foodcount)
+        ReplaceArray(scene.diet, tmp)
 
         scene.simulation.last.eaten = 0
         scene.simulation.last.starved = 0

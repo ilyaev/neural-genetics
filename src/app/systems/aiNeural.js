@@ -1,8 +1,10 @@
 import { setNetInputValues, calculateNetOutput } from '../types/neural'
-import { nearestCreature } from '../types/creature'
-import { nearestFood } from '../types/food' 
 import p5 from 'p5'
 import Flock from './flock'
+import * as Cluster from '../types/cluster'
+import curry from '../lib/curry'
+
+const conditionAlive = (one) => one.health > 0 ? true : false
 
 const ai = (scene) => {
 
@@ -25,6 +27,12 @@ const ai = (scene) => {
         }
     }
 
+    const aliveCreatureCondition = (one) => one.health > 0 ? true : false
+
+    const getNearestCreature = curry(Cluster.nearestItem)(scene.population)(scene.clusters)(aliveCreatureCondition)
+    const getNearestFood = curry(Cluster.nearestItem)(scene.diet)(scene.foodClusters)(() => true)
+
+
     const xyBrain = (creature) => {
 
         setupConstants()
@@ -36,8 +44,11 @@ const ai = (scene) => {
         const x = creature.position.x
         const y = creature.position.y
 
-        const nearest = nearestCreature(scene.population, creature.position)
-        const food = nearestFood(scene.diet, creature.position)
+        //const nearest = nearestCreature(scene.population, creature.position)
+        const nearest = getNearestCreature(creature.position)
+
+        //const food = nearestFood(scene.diet, creature.position)
+        const food = getNearestFood(creature.position)
         
         creature.targetCreature = nearest
         creature.targetFood = food
@@ -89,9 +100,21 @@ const ai = (scene) => {
 
         creature.speed = speed
 
-        creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        const vDesired = new p5.Vector(vX, vY)
+        vDesired.normalize()
+        vDesired.mult(scene.config.maxSpeed * speed)
+
+        const steer = p5.Vector.sub(vDesired, creature.velocity)
+        steer.limit(scene.config.steeringForce * speed)
+
+        creature.acceleration = steer
         creature.velocity.add(creature.acceleration)
-        creature.velocity.limit(scene.config.maxSpeed * speed)
+
+
+
+        // creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        // creature.velocity.add(creature.acceleration)
+        // creature.velocity.limit(scene.config.maxSpeed * speed)
         
         return creature
     }
