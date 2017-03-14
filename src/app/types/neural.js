@@ -64,7 +64,8 @@ export const setNetInputValues = (net, input) => {
 }
 
 export const calculateNeuronValue = (neuron) => {
-    const shift = (5 / (neuron.synapses.length + 1))
+    //const shift = (5 / (neuron.synapses.length + 1))
+    const shift = 1
     neuron.rawValue = neuron.bias + neuron.synapses.reduce((sum, next) => sum + next.weight * next.input.value * shift, 0)
     neuron.value = tanh(neuron.rawValue)
 }

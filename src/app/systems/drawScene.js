@@ -4,6 +4,7 @@ import drawPopulation from './drawPopulation'
 import drawFood from './drawFood'
 import drawNeuralNet from './drawNeuralNet'
 import drawGenetics from './drawGenetics'
+import drawIdPanel from './drawIdPanel'
 
 const draw = function(scene) {
 
@@ -11,9 +12,13 @@ const draw = function(scene) {
 
         
         
-        if (scene.selection.creature && scene.ui.neuralNet) {
-            drawNeuralNet(scene.selection.creature.net, 'ID: ' + scene.selection.creature.id, scene.nnCanvas)
-            scene.canvas.image(scene.nnCanvas, 10, 10)
+        if (scene.selection.creature) {
+            if (scene.ui.neuralNet) {
+                drawNeuralNet(scene.selection.creature.net, 'ID: ' + scene.selection.creature.id, scene.nnCanvas)
+                scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
+            }
+            drawIdPanel(scene.idCanvas, scene)
+            scene.canvas.image(scene.idCanvas, scene.config.width, scene.nnCanvas.height)
         }
 
         if (scene.ui.genetics) {
@@ -21,8 +26,10 @@ const draw = function(scene) {
             scene.canvas.image(scene.genCanvas, 0, scene.canvas.height - scene.genCanvas.height)
         }
         
+        scene.canvas.stroke(200)
+        scene.canvas.noFill()
+        scene.canvas.rect(0,0, scene.config.width, scene.config.height)
         
-
         drawFood(scene.canvas, scene.diet)
         drawPopulation(scene.canvas, scene.population)
 

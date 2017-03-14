@@ -134,6 +134,19 @@ const simulation = (scene) => {
 
         scene.simulation.last.eaten = 0
         scene.simulation.last.starved = 0
+
+        scene.population.forEach(one => {
+            // one.position.x = Math.random() * scene.config.width
+            // one.position.y = Math.random() * scene.config.height
+            one.position.x = scene.config.center.x + Math.random() * 20 - 10
+            one.position.y = scene.config.center.y + Math.random() * 20 - 10
+        })
+
+        scene.diet.forEach(one => {
+            one.position.x = Math.random() * scene.config.width
+            one.position.y = Math.random() * scene.config.height
+            delete(one.cluster)
+        })
         
     }
 

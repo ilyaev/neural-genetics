@@ -56,9 +56,15 @@ const ai = (scene) => {
         let desired = new p5.Vector(0, 0)
         let desiredFood = new p5.Vector(0, 0)
         let distToFood = 0
+        let distToEnemy = 0
 
         if (nearest) {
-            desired = p5.Vector.sub(nearest.position, creature.position).setMag(1)
+            desired = p5.Vector.sub(nearest.position, creature.position).setMag(-1)
+            distToEnemy = p5.Vector.dist(nearest.position, creature.position)
+            if (distToEnemy < 15) {
+                // creature.health = 0
+                // nearest.health = 0
+            }
         }
 
         if (food) {
@@ -74,13 +80,13 @@ const ai = (scene) => {
         }
 
         const input = [
-            x < centerX ? 0 : (x - centerX) / (maxX / 2),
-            x > centerX ? 0 : (centerX - x) / (maxX / 2),
-            y < centerY ? 0 : (y - centerY) / (maxY / 2),
-            y > centerY ? 0 : (centerY - y) / (maxY / 2),
+            x < centerX ? -1 : (x - centerX) / (maxX / 2),
+            x > centerX ? -1 : (centerX - x) / (maxX / 2),
+            y < centerY ? -1 : (y - centerY) / (maxY / 2),
+            y > centerY ? -1 : (centerY - y) / (maxY / 2),
             desired.x,
             desired.y,
-            nearest ? 1 - p5.Vector.dist(nearest.position, creature.position) / maxDistance : 0,
+            nearest ? 1 - distToEnemy / maxDistance : 0,
             desiredFood.x,
             desiredFood.y,
             food ? 1 - distToFood / maxDistance : 0,
@@ -100,21 +106,21 @@ const ai = (scene) => {
 
         creature.speed = speed
 
-        const vDesired = new p5.Vector(vX, vY)
-        vDesired.normalize()
-        vDesired.mult(scene.config.maxSpeed * speed)
+        // const vDesired = new p5.Vector(vX, vY)
+        // vDesired.normalize()
+        // vDesired.mult(scene.config.maxSpeed * speed)
 
-        const steer = p5.Vector.sub(vDesired, creature.velocity)
-        steer.limit(scene.config.steeringForce * speed)
+        // const steer = p5.Vector.sub(vDesired, creature.velocity)
+        // steer.limit(scene.config.steeringForce * speed)
 
-        creature.acceleration = steer
-        creature.velocity.add(creature.acceleration)
-
-
-
-        // creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        // creature.acceleration = steer
         // creature.velocity.add(creature.acceleration)
-        // creature.velocity.limit(scene.config.maxSpeed * speed)
+
+
+
+        creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        creature.velocity.add(creature.acceleration)
+        creature.velocity.limit(scene.config.maxSpeed * speed)
         
         return creature
     }

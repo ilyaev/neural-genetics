@@ -1,5 +1,6 @@
 const crossover = (male, female) => {
     let len = Math.round(Math.random()*(male.length / 2)) + 1
+    //len = Math.round(Math.random() * 3) + 1
     let maleFirst = true
 
     let childOne = []
@@ -28,7 +29,7 @@ const crossover = (male, female) => {
             childTwo = childTwo.concat(mPart)
             maleFirst = true
         }
-        //len = Math.round(Math.random()*(male.length / 2)) + 1
+        len = Math.round(Math.random()*(male.length / 2)) + 1
     }
     return [childOne, childTwo]
 }

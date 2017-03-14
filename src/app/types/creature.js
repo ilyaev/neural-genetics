@@ -1,5 +1,6 @@
 import p5 from 'p5'
 import NeuralNet from './neural'
+import config from '../config'
 
 export const Sensor = (host, position) => {
     return {
@@ -17,7 +18,7 @@ export const Creature = (position) => {
         score: 0,
         generation: 1,
         id: 1,
-        health: 300,
+        health: config.initialHealth,
         sensors: [],
         velocity: false,
         net: {},

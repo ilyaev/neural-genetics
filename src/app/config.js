@@ -1,15 +1,26 @@
 import p5 from 'p5'
 
-const mode = 'neural'
-// const mode = 'flocking'
+const rightPanel = {
+    width: 300
+}
+
+const bottomPanel = {
+    height: 200
+}
 
 const configuration = {
-    mode: 'flocking',
+    mode: 'neural',
     popcount: 100,
+    initialHealth: 500,
+    popspawn: 'center',
     foodcount: 50,
-    popspawn: 'random',
-    width: window.innerWidth,
-    height: window.innerHeight,
+    simulation: {
+        lifespan: 1000
+    },
+    rightPanel,
+    bottomPanel,
+    width: window.innerWidth - rightPanel.width,
+    height: window.innerHeight - bottomPanel.height,
     center: {
         x: 0,
         y: 0
@@ -28,9 +39,6 @@ const configuration = {
             cohesion: 1
         }
     },
-    simulation: {
-        lifespan: 1000
-    },
     colors: {
         food: [255, 0, 0],
         creature: [255, 255, 255]
@@ -41,16 +49,4 @@ const configuration = {
 configuration.clusterSize = Math.max(Math.ceil(Math.max(configuration.width, configuration.height) / 10), 100)
 configuration.center = new p5.Vector(configuration.width / 2, configuration.height / 2)
 
-const nnConfiguration = Object.assign({}, configuration, {
-    mode: 'neural',
-    popcount: 100,
-    popspawn: 'center'
-})
-
-let defConf = configuration
-
-if (mode == 'neural') {
-    defConf = nnConfiguration
-}
-
-export default defConf
+export default configuration

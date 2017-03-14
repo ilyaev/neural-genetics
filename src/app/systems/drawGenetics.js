@@ -4,6 +4,13 @@ const map = (value, srcMax, scaleMax) => {
     return scaleMax * (value / srcMax)
 }
 
+const colors = {
+    maxFitness: [235, 117, 2],
+    meanFitness: [255,255,255],
+    eaten: [220, 1, 40],
+    starved: [61, 202, 1]
+}
+
 const drawCharts = (canvas, scene) => {
 
     const stats = scene.simulation.stats
@@ -25,9 +32,10 @@ const drawCharts = (canvas, scene) => {
         return sum
     }, globalMaxes)
     
+    
     const intervals = stats.length
 
-    const chartWidth = canvas.width * 0.75
+    const chartWidth = canvas.width * 0.75 - 20
     const chartHeight = canvas.height
 
     const intervalWidth = chartWidth / (intervals - 1)
@@ -42,13 +50,6 @@ const drawCharts = (canvas, scene) => {
 
     const prev = []
 
-    const colors = {
-        maxFitness: [0, 200, 0],
-        meanFitness: [125, 125, 0],
-        eaten: [200, 0, 0],
-        starved: [0, 125, 125]
-    }
-
     canvas.push()
 
         stats.forEach((stat, index) => {
@@ -59,18 +60,23 @@ const drawCharts = (canvas, scene) => {
                 if (typeof vertexes[key] == 'undefined') {
                     vertexes[key] = []
                 }
-                nextY = offsetY - map(stat[key], globalMaxes[key], chartHeight)
+                nextY = offsetY - map(stat[key], globalMaxes[key] * 1.1, chartHeight)
                 vertexes[key].unshift([nextX, nextY])
             })
         })
 
-        canvas.strokeWeight(2)
+        canvas.strokeWeight(1)
         
         canvas.noFill()
 
         Object.keys(vertexes).forEach(key => {
             if (typeof colors[key] != 'undefined') {
                 canvas.stroke(...colors[key])
+                if (key == 'meanFitness') {
+                    canvas.strokeWeight(3)
+                } else {
+                    canvas.strokeWeight(1)
+                }
                 canvas.beginShape()
                     vertexes[key].forEach(vertexParams => canvas.vertex(...vertexParams))
                 canvas.endShape()
@@ -109,24 +115,41 @@ const drawGenetics = (canvas, scene) => {
     const prev = simulation.stats.length > 0 ? simulation.stats[simulation.stats.length - 1] : false
     
     const texts = [
-        'GEN: ' + last.generation + ' ( ' + Math.round((last.age / last.lifespan)*100) + '% )',
-        'MXF: ' + last.maxFitness + (prev ? (' ( ' + prev.maxFitness + ' )') : ''),
-        'MEF: ' + last.meanFitness + (prev ? (' ( ' + prev.meanFitness + ' )') : ''),
-        'STV: ' + last.starved + (prev ? (' ( ' + prev.starved + ' )') : ''),
-        'FET: ' + last.eaten + (prev ? (' ( ' + prev.eaten + ' )') : '')
+        'Generation: ' + last.generation + ' ( ' + Math.round((last.age / last.lifespan)*100) + '% )',
+        'Mean Fitness: ' + last.meanFitness,
+        'Max Fitness: ' + last.maxFitness,
+        'Starved: ' + last.starved,
+        'Food Eaten: ' + last.eaten
     ]
 
     canvas.background(0)
 
-    const textSize = canvas.height / 7
+    const textSize = canvas.height / 8
     canvas.textSize(textSize)
     canvas.fill(200)
     texts.forEach((label, index) => {
-        canvas.text(label, 5, textSize * (index + 1) + 5)
+        if (label.indexOf('Max Fi') !== -1) {
+            canvas.fill(...colors.maxFitness)
+        } else if (label.indexOf('Mean Fi') !== -1) {
+            canvas.fill(...colors.meanFitness)
+        } else if (label.indexOf('Starved') !== -1) {
+            canvas.fill(...colors.starved)
+        } else if (label.indexOf('Food') !== -1) {
+            canvas.fill(...colors.eaten)
+        } else {
+            canvas.fill(200)
+        }
+        const parts = label.split(':')
+        canvas.text(parts[0], 10, 20 + textSize * (index + 1) + 5)
+        canvas.text(parts[1], 165, 20 + textSize * (index + 1) + 5)
     })
 
+    canvas.push()
     drawCharts(canvas, scene)
-
+    canvas.noFill()
+    canvas.stroke(255)
+    canvas.rect(0,0,canvas.width - 1, canvas.height - 1)
+    canvas.pop()
 }
 
 export default drawGenetics

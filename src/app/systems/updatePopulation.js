@@ -19,10 +19,7 @@ const update = function(scene) {
         one.acceleration.add(seekMouseForce.mult(2))
         return one
     }
-
-    let minOutput = 1
-    let maxOutput = 0
-
+    
     const syncWithCluster = curry(Cluster.syncItemWithClusters)(scene.clusters)
 
 
@@ -36,7 +33,7 @@ const update = function(scene) {
                 one.health -= one.speed
                 if (one.health <= 0) {
                     scene.simulation.last.starved++
-                    spawnFood(scene.diet, one.position.x, one.position.y)
+                    //spawnFood(scene.diet, one.position.x, one.position.y)
                 } else {
                     switch (scene.config.mode) {
                         case 'flocking':
@@ -50,7 +47,8 @@ const update = function(scene) {
                             break
                         case 'neural':
                             compose(
-                                collision.borderRollOver,
+                                //collision.borderRollOver,
+                                collision.borderKill,
                                 syncWithCluster,
                                 ai.xyBrain
                             )(one)

@@ -21,21 +21,17 @@ const populationNeural = compose(
     makePopulation
 ) (config.popcount, config.center.x, config.center.y)
 
-const populationFlocking = compose(
-    initializeVelocity,
-    initializeAcceleration,
-    makePopulationRandomPosition
-) (config.popcount, config.width, config.height)
 
 const scene = {
     diet,
     timeScale: 1,
-    population: config.mode == 'flocking' ? populationFlocking : populationNeural,
+    population: populationNeural,
     clusters: [],
     foodClusters: [],
     config,
     canvas: null,
     nnCanvas: null,
+    idCanvas: null,
     genCanvas: null,
     selection: {
         creature: false
@@ -54,7 +50,7 @@ const scene = {
         stats: []
     },
     ui: {
-        neuralNet: false,
+        neuralNet: true,
         genetics: true
     },
     active: true
