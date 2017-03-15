@@ -119,7 +119,8 @@ const drawGenetics = (canvas, scene) => {
         'Mean Fitness: ' + last.meanFitness,
         'Max Fitness: ' + last.maxFitness,
         'Starved: ' + last.starved,
-        'Food Eaten: ' + last.eaten
+        'Food Eaten: ' + last.eaten,
+        'Mutations: ' + simulation.mutations
     ]
 
     canvas.background(0)

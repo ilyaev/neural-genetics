@@ -6,6 +6,24 @@ import curry from '../lib/curry'
 
 const conditionAlive = (one) => one.health > 0 ? true : false
 
+const getDistanceVector = (p1, p2) => {
+    const x1 = p1.x
+    const y1 = p1.y
+    const x2 = p2.x
+    const y2 = p2.y
+
+    const dx = Math.abs(x2 - x1)
+    const dy = Math.abs(y2 - y1)
+    const dist = Math.sqrt(dx*2 + dy*2)
+
+    const fn = y2 < y1 ? dy / (dist*dist) : 0
+    const fw = x2 < x1 ? dx / (dist*dist) : 0
+    const fe = x2 > x1 ? dx / (dist*dist) : 0
+    const fs = y2 > y1 ? dy / (dist*dist) : 0
+
+    return [fn, fe, fs, fw].map(one => one)
+}
+
 const ai = (scene) => {
 
     const flock = Flock(scene)()
@@ -28,9 +46,17 @@ const ai = (scene) => {
     }
 
     const aliveCreatureCondition = (one) => one.health > 0 ? true : false
+    const healtyFoodCondition = (one) => one.eaten ? false : true
 
     const getNearestCreature = curry(Cluster.nearestItem)(scene.population)(scene.clusters)(aliveCreatureCondition)
-    const getNearestFood = curry(Cluster.nearestItem)(scene.diet)(scene.foodClusters)(() => true)
+    const getNearestFood = curry(Cluster.nearestItem)(scene.diet)(scene.foodClusters)(healtyFoodCondition)
+
+    const polarInput = (creature, nearest, food) => {
+        return [
+            food ? p5.Vector.dist(creature.position, food.position) / 20 - 5 : 0,
+            food ? p5.Vector.sub(food.position, creature.position).heading() / 3.14 : 0
+        ]   
+    }
 
 
     const xyBrain = (creature) => {
@@ -59,12 +85,19 @@ const ai = (scene) => {
         let distToEnemy = 0
 
         if (nearest) {
-            desired = p5.Vector.sub(nearest.position, creature.position).setMag(-1)
             distToEnemy = p5.Vector.dist(nearest.position, creature.position)
-            if (distToEnemy < 15) {
-                // creature.health = 0
-                // nearest.health = 0
+            if (distToEnemy < 5) {
+                if (creature.score > nearest.score) {
+                    creature.score += 1
+                    creature.health += 150
+                    nearest.health = 0
+                } else if (creature.score < nearest.score) {
+                    creature.health = 0
+                    nearest.score += 1
+                    nearest.helath += 150
+                }
             }
+            desired = p5.Vector.sub(creature.position, nearest.position).setMag(1)
         }
 
         if (food) {
@@ -79,19 +112,29 @@ const ai = (scene) => {
             }
         }
 
-        const input = [
-            x < centerX ? -1 : (x - centerX) / (maxX / 2),
-            x > centerX ? -1 : (centerX - x) / (maxX / 2),
-            y < centerY ? -1 : (y - centerY) / (maxY / 2),
-            y > centerY ? -1 : (centerY - y) / (maxY / 2),
+        let input = [
+            // x < centerX ? -1 : (x - centerX) / (maxX / 2),
+            // x > centerX ? -1 : (centerX - x) / (maxX / 2),
+            // y < centerY ? -1 : (y - centerY) / (maxY / 2),
+            // y > centerY ? -1 : (centerY - y) / (maxY / 2),
+            x / maxX,
+            y / maxY,
             desired.x,
             desired.y,
-            nearest ? 1 - distToEnemy / maxDistance : 0,
+            //nearest ? distToEnemy / 20 - 5 : 0,
+            nearest ? 1 - Math.min(0.9, distToEnemy / 100) : 0,
+            nearest ? (nearest.score > creature.score ? -1 : 1) : 0, 
             desiredFood.x,
             desiredFood.y,
-            food ? 1 - distToFood / maxDistance : 0,
-            Math.min(creature.age, 1200) / 600 - 1
+            //food ? distToFood / 20 - 5 : 0,
+            food ? 1 - Math.min(0.9, distToFood / 100) : 0,
+            //Math.min(creature.age, 1200) / 600 - 1
         ]
+
+        // const input = getDistanceVector(creature.position, food ? food.position : {x: 0, y: 0})
+        //     .concat(getDistanceVector(creature.position, nearest ? nearest.position : {x:0,y:0}))
+        
+       // input = polarInput(creature, nearest, food)
 
 
         setInput(creature.net, input)
@@ -118,7 +161,8 @@ const ai = (scene) => {
 
 
 
-        creature.acceleration = new p5.Vector(vX, vY).limit(scene.config.steeringForce * speed)
+        creature.acceleration = new p5.Vector(vX, vY)
+        creature.acceleration.mult(speed)
         creature.velocity.add(creature.acceleration)
         creature.velocity.limit(scene.config.maxSpeed * speed)
         

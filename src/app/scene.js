@@ -18,8 +18,8 @@ const populationNeural = compose(
     initializeNeural,
     initializeVelocity,
     initializeAcceleration,
-    makePopulation
-) (config.popcount, config.center.x, config.center.y)
+    makePopulationRandomPosition
+) (config.popcount, config.width, config.height)
 
 
 const scene = {
@@ -47,7 +47,8 @@ const scene = {
             lifespan: 1000
         },
         generation: 1,
-        stats: []
+        stats: [],
+        mutations: 0
     },
     ui: {
         neuralNet: true,

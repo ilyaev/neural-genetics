@@ -10,10 +10,12 @@ const bottomPanel = {
 
 const configuration = {
     mode: 'neural',
-    popcount: 100,
-    initialHealth: 500,
-    popspawn: 'center',
+    popcount: 50,
+    initialHealth: 300,
+    popspawn: 'random', //center
+    foodMode: 'finite', // infinite
     foodcount: 50,
+    fertilize: true,
     simulation: {
         lifespan: 1000
     },

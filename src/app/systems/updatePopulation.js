@@ -33,7 +33,9 @@ const update = function(scene) {
                 one.health -= one.speed
                 if (one.health <= 0) {
                     scene.simulation.last.starved++
-                    //spawnFood(scene.diet, one.position.x, one.position.y)
+                    if (scene.config.fertilize) {
+                        spawnFood(scene.diet, one.position.x, one.position.y)
+                    }
                 } else {
                     switch (scene.config.mode) {
                         case 'flocking':
@@ -47,8 +49,8 @@ const update = function(scene) {
                             break
                         case 'neural':
                             compose(
-                                //collision.borderRollOver,
-                                collision.borderKill,
+                                collision.borderRollOver,
+                                //collision.borderKill,
                                 syncWithCluster,
                                 ai.xyBrain
                             )(one)

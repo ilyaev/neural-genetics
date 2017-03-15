@@ -20,6 +20,8 @@ export const Creature = (position) => {
         id: 1,
         health: config.initialHealth,
         sensors: [],
+        category: 'random',
+        elitecount: 0,
         velocity: false,
         net: {},
         fitness: 0,

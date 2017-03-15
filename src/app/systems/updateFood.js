@@ -9,9 +9,17 @@ const update = function(scene) {
     const syncWithCluster = curry(Cluster.syncItemWithClusters)(scene.foodClusters)
 
     return () => {
-        resupplyFood(scene.diet, scene.config.width, scene.config.height, scene.config.foodcount)
-            .concat(scene.diet.filter(food => typeof food.cluster == 'undefined'))
-            .forEach(syncWithCluster)
+
+        if (scene.config.foodMode === 'infinite') {
+
+            resupplyFood(scene.diet, scene.config.width, scene.config.height, scene.config.foodcount)
+                .concat(scene.diet.filter(food => typeof food.cluster == 'undefined'))
+                .forEach(syncWithCluster)
+        } else {
+
+            scene.diet.filter(food => typeof food.cluster == 'undefined')
+                .forEach(syncWithCluster)            
+        }
     }
     
 }

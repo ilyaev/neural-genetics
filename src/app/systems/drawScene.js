@@ -10,6 +10,8 @@ const draw = function(scene) {
 
     return () => {
 
+        drawFood(scene.canvas, scene.diet)
+        drawPopulation(scene.canvas, scene.population)
         
         
         if (scene.selection.creature) {
@@ -30,8 +32,6 @@ const draw = function(scene) {
         scene.canvas.noFill()
         scene.canvas.rect(0,0, scene.config.width, scene.config.height)
         
-        drawFood(scene.canvas, scene.diet)
-        drawPopulation(scene.canvas, scene.population)
 
 
 

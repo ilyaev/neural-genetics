@@ -6,7 +6,7 @@ const drawNeuralNet = (net, caption, canvas) => {
 
     canvas.counter++
 
-    if (canvas.counter < 30 && canvas.counter > 0) {
+    if (canvas.counter < 10 && canvas.counter > 0) {
         return
     }
 
