@@ -103,4 +103,12 @@ const RandomWeightNeuralNet = () => NeuralNet(
     () => Math.random() * 2 - 1
 )
 
+export const SnakeNeuralNet = () => NeuralNet(
+    3, // Input Size
+    1, // Hidden Layers number
+    6, // Hidden Layer size
+    3, // Output Size
+    () => Math.random() * 2 - 1
+)
+
 export default RandomWeightNeuralNet
