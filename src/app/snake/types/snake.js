@@ -1,11 +1,21 @@
 import p5 from 'p5'
 import config from '../config'
-import { SnakeNeuralNet } from '../../types/neural'
+import { NeuralNet } from '../../types/neural'
+
+export const SnakeNeuralNet = () => NeuralNet(
+    7, // Input Size
+    1, // Hidden Layers number
+    5, // Hidden Layer size
+    3, // Output Size
+    () => Math.random() * 2 - 1
+)
 
 export const Snake = (position) => {
     return {
         position,
-        tail: [],
+        tail: [
+            SnakeBody(new p5.Vector(position.x, position.y),new p5.Vector(position.x, position.y))
+        ],
         length: 1,
         dx: 0,
         dy: 0,
@@ -16,6 +26,7 @@ export const Snake = (position) => {
         health: 100,
         id: -1,
         fitness: 0,
+        score: 0,
         generation: 0,
         category: 'random',
         elitecount: 0,
@@ -35,8 +46,14 @@ export const SnakeBody = (position, destination) => {
 export const calculateFitness = (snakes) => {
     const maxDist = p5.Vector.dist(new p5.Vector(0,0), new p5.Vector(config.width, config.height))
     snakes.forEach(snake => {
-        const distToFood = p5.Vector.dist(snake.position, snake.food.position)
-        snake.fitness = Math.round((distToFood / maxDist) * 100)
+        let distToFood = 0
+        if (snake.food) {
+            distToFood = p5.Vector.dist(snake.position, snake.food.position)
+        }
+        snake.fitness = snake.score * 100
+        if (distToFood > 0) {
+            snake.fitness += Math.round((distToFood / maxDist) * 100)
+        }
     })
 }
 

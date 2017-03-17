@@ -20,7 +20,7 @@ const Synapse = (weight = 0, input = false) => {
 }
 
 
-const NeuralNet = (inputSize = 3, hiddenLayers = 1, hiddenLayersSize = 3, outputSize = 1, weightFunction = () => Math.random()) => {
+export const NeuralNet = (inputSize = 3, hiddenLayers = 1, hiddenLayersSize = 3, outputSize = 1, weightFunction = () => Math.random()) => {
 
     const input = []
     const hidden = []
@@ -110,5 +110,6 @@ export const SnakeNeuralNet = () => NeuralNet(
     3, // Output Size
     () => Math.random() * 2 - 1
 )
+
 
 export default RandomWeightNeuralNet

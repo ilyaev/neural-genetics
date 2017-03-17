@@ -1,6 +1,8 @@
 import p5 from 'p5'
 import snakesDrawer from './drawSnakes'
 import drawFood from './drawFood'
+import drawNeuralNet from '../../systems/drawNeuralNet'
+import drawGenetics from './drawGenetics'
 
 
 
@@ -19,6 +21,12 @@ const draw = function(scene) {
 
         drawSnakes()
         drawFood(canvas, scene.diet)
+
+        drawNeuralNet(scene.snakes[0].net, 'ID: ' + scene.snakes[0].id, scene.nnCanvas)
+        scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
+
+        drawGenetics(scene.genCanvas, scene)
+        scene.canvas.image(scene.genCanvas, 0, scene.canvas.height - scene.genCanvas.height)
     }    
 
 }

@@ -11,7 +11,7 @@ const draw = function(scene) {
 
         const canvas = scene.canvas
 
-        snakes.forEach(snake => {
+        snakes.filter(snake => snake.health > 0).forEach(snake => {
 
             const food = snake.food
 

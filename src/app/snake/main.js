@@ -13,6 +13,8 @@ const sketch = function(p) {
 
     p.setup = function() {
         p.createCanvas(window.innerWidth, window.innerHeight)
+        scene.nnCanvas = p.createGraphics(config.rightPanel.width, 300)
+        scene.genCanvas = p.createGraphics(window.innerWidth, config.bottomPanel.height)
         scene.canvas = p
     }
 
@@ -30,6 +32,9 @@ const sketch = function(p) {
 
     p.keyPressed = function(event) {
         switch (event.key) {
+            case 'z':
+                scene.timeScale = scene.timeScale == 1 ? 50 : 1
+                break
             default:
                 scene.active = !scene.active
         }

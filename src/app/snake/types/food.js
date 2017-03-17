@@ -7,7 +7,8 @@ export const Food = (position = null, size = config.cellSize / 2) => {
         position,
         size,
         eaten: false,
-        snakeId: -1
+        snakeId: -1,
+        active: true
     }
 
 }

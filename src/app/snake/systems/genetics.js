@@ -11,6 +11,8 @@ const simulation = (scene) => {
     var counter = -1
     var age = 0
     var lifespan = scene.config.simulation.lifespan
+    var lastHash = 0
+    var hashCounter = 0
 
     const getElite = () => {
         let maxFitness = 0
@@ -21,7 +23,7 @@ const simulation = (scene) => {
                 if (one.fitness > maxFitness) {
                     maxFitness = one.fitness
                 }
-                sumFitness += one.fitness
+                sumFitness += (one.fitness ? one.fitness : 0)
                 return one
             })
             .sort((a,b) => a.fitness > b.fitness ? -1 : 1)
@@ -44,7 +46,7 @@ const simulation = (scene) => {
                 one.dy = 0
                 return one
             })
-        return [elite, maxFitness, sumFitness / scene.snakes.length]
+        return [elite, maxFitness, sumFitness > 0 ? sumFitness / scene.snakes.length : 0]
     }
 
     const makeNewSnake = (population) => {
@@ -127,6 +129,15 @@ const simulation = (scene) => {
 
         ReplaceArray(scene.snakes, snakes)
 
+        const foodX = Math.random() * scene.config.width
+        const foodY = Math.random() * scene.config.height
+
+        scene.diet.forEach(food => {
+            food.position.x = foodX
+            food.position.y = foodY
+            food.active = true
+        })
+
         scene.simulation.generation++
 
         scene.simulation.stats.push(Object.assign({}, scene.simulation.last))
@@ -144,6 +155,17 @@ const simulation = (scene) => {
         return true
     }
 
+    const isDynamic = () => {
+        const newHash = scene.snakes.reduce((result, next) => result + next.tail.length, 0)
+        if (newHash > 0 && newHash == lastHash) {
+            hashCounter++
+        } else {
+            lastHash = newHash
+            hashCounter = 0
+        }
+        return hashCounter < 20
+    }
+
     const simulate = () => {
         if (!checkCounter()) {
             return
@@ -151,7 +173,7 @@ const simulation = (scene) => {
         
         const aliveCount = scene.snakes.filter(creature => creature.health > 0 ? true : false).length
 
-        if (aliveCount > 0 && age < lifespan ) {
+        if (aliveCount > 0 && age < lifespan && isDynamic()) {
             return
         }
 

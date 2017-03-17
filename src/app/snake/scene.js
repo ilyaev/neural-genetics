@@ -7,11 +7,14 @@ import * as Food from './types/food'
 const snakes = []
 const diet = []
 
+const foodX = Math.random() * config.width
+const foodY = Math.random() * config.height
+
 for(let i = 0 ; i < config.snakescount ; i++) {
     const snake = Snake.createSnake(config.center.x, config.center.y)
     snake.id = (i + 1)
     snakes.push(snake)
-    Food.spawnFood(diet, Math.random() * config.width, Math.random() * config.height, snake.id)
+    Food.spawnFood(diet, foodX, foodY, snake.id)
 }
 
 const scene = {

@@ -11,9 +11,9 @@ const bottomPanel = {
 const configuration = {
     speed: 1,
     simulation: {
-        lifespan: 300
+        lifespan: 250000
     },
-    snakescount: 50,
+    snakescount: 100,
     rightPanel,
     bottomPanel,
     cellSize: 10,
@@ -29,6 +29,21 @@ const configuration = {
     }
 
 }
+
+const rX = Math.ceil(configuration.width / configuration.cellSize)
+const dX = configuration.width - rX * configuration.cellSize
+configuration.width = rX * configuration.cellSize
+configuration.rightPanel.width += dX
+
+const rY = Math.ceil(configuration.height / configuration.cellSize)
+const dY = configuration.height - rY * configuration.cellSize
+configuration.height = rY * configuration.cellSize
+configuration.bottomPanel.height += dY
+
+console.log(configuration)
+
+
+
 configuration.cellRectParams = [-configuration.cellSize  / 2 + 1, -configuration.cellSize / 2 + 1, configuration.cellSize - 1, configuration.cellSize - 1]
 configuration.clusterSize = Math.max(Math.ceil(Math.max(configuration.width, configuration.height) / 10), 100)
 configuration.center = new p5.Vector(configuration.width / 2, configuration.height / 2)
