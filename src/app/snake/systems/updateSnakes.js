@@ -43,19 +43,48 @@ const update = function(scene) {
         return result
     }
 
+    const getNeighboursVector = (snake) => {
+        const coords = [[-1,0],[1,0],[0,-1],[0,1]].map(pair => {
+            const tX = Math.round(snake.position.x / cellSize) + pair[0]
+            const tY = Math.round(snake.position.y / cellSize) + pair[1]
+            return [tX, tY]
+        })
+
+        let result = [1,1,1,1]
+
+        snake.tail.forEach(tail => {
+            const tX = Math.round(tail.position.x / cellSize)
+            const tY = Math.round(tail.position.y / cellSize)
+            coords.forEach((pair, index) => {
+                if (pair[0] == tX && pair[1] == tY) {
+                    result[index] = -1
+                } else if (tX < 0 || tX > cWidth || tY < 0 || tY > cHeight) {
+                    result[index] = -1
+                }
+            })
+        })
+
+        return result
+        
+    }
+
     const generateCommand = (snake) => {
 
         const desired = p5.Vector.sub(snake.position, snake.food.position).setMag(1)
-
+        const nV = getNeighboursVector(snake)
         const input = [
             desired.x,
             desired.y,
-            snake.position.x < 100 ? snake.position.x / 100 : 0,
-            snake.position.y < 100 ? snake.position.y / 100 : 0,
-            snake.position.x > (maxX - 100) ? 1 - (maxX - snake.position.x) / 100 : 0,
-            snake.position.y > (maxY - 100) ? 1 - (maxY - snake.position.y) / 100 : 0,
+            snake.dx,
+            snake.dy,
+            // scene.canvas.map(snake.position.x, 0, maxX, -1, 1),
+            // scene.canvas.map(snake.position.y, 0, maxY, -1, 1)
+            // snake.position.x < 100 ? snake.position.x / 100 : 0,
+            // snake.position.y < 100 ? snake.position.y / 100 : 0,
+            // snake.position.x > (maxX - 100) ? 1 - (maxX - snake.position.x) / 100 : 0,
+            // snake.position.y > (maxY - 100) ? 1 - (maxY - snake.position.y) / 100 : 0,
             //snake.tail.length / 100 * 2 - 1
-        ]
+        ].concat(nV)
 
         let dx = 0
         let dy = 0
@@ -84,10 +113,26 @@ const update = function(scene) {
 
     const collisionCheck = (snake) => {
         const {x, y} = snake.destination
-        if (x >= maxX || x <= 0 || y >= maxY || y <= 0) {
+        const cellX = Math.round(x / cellSize)
+        const cellY = Math.round(y / cellSize)
+
+        let result = true
+        snake.tail.forEach(tail => {
+            if (result) {
+                const tX = Math.round(tail.position.x / cellSize)
+                const tY = Math.round(tail.position.y / cellSize)
+                if (tX == cellX && tY == cellY) {
+                    result = false
+                }
+            }
+        })
+
+        if (!result || x >= maxX || x <= 0 || y >= maxY || y <= 0) {
             snake.health = 0
             snake.food.active = false
         }
+
+
         return snake
     }
 
@@ -124,6 +169,12 @@ const update = function(scene) {
                 collisionCheck,
                 generateCommand
             ))
+
+        if (scene.selection.snake && scene.selection.snake.health <= 0) {
+            scene.selection.snake.selected = false
+            scene.selection.snake = Snake.fittestSnake(scene.snakes)
+            scene.selection.snake.selected = true
+        }
     }
 
 }

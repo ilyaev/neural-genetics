@@ -1,18 +1,28 @@
 import p5 from 'p5'
 import { Food } from '../types/food'
 
+const drawOne = (p, one) => {
+    p.push()
+        p.translate(one.position.x, one.position.y)
+        p.ellipse(0, 0, one.size * 2, one.size * 2)
+    p.pop()
+}
 
-const draw = function(p, food) {
+const draw = function(p, food, scene) {
 
     p.push()
         p.fill(255, 0, 0, 125)
         p.noStroke()
-        food.filter(one => one.active == true).forEach(one => {
-            p.push()
-                p.translate(one.position.x, one.position.y)
-                p.ellipse(0, 0, one.size * 2, one.size * 2)
-            p.pop()
-        })
+
+        if (!scene.ui.fantoms && scene.selection.snake) {
+            if (scene.selection.snake.food) {
+                drawOne(p, scene.selection.snake.food)
+            }
+        }  else {
+            food.filter(one => one.active == true).forEach(one => {
+                drawOne(p, one)
+            })
+        }
     p.pop()
 
 }

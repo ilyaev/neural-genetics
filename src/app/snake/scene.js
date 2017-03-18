@@ -17,6 +17,8 @@ for(let i = 0 ; i < config.snakescount ; i++) {
     Food.spawnFood(diet, foodX, foodY, snake.id)
 }
 
+snakes[0].selected = true
+
 const scene = {
     timeScale: 1,
     config,
@@ -24,7 +26,7 @@ const scene = {
     diet,
     canvas: null,
     selection: {
-        creature: false
+        snake: snakes[0]
     },
     simulation: {
         last: {
@@ -41,7 +43,8 @@ const scene = {
     },
     ui: {
         neuralNet: true,
-        genetics: true
+        genetics: true,
+        fantoms: false
     },
     active: true
 }

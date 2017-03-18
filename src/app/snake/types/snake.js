@@ -3,9 +3,9 @@ import config from '../config'
 import { NeuralNet } from '../../types/neural'
 
 export const SnakeNeuralNet = () => NeuralNet(
-    7, // Input Size
+    8, // Input Size
     1, // Hidden Layers number
-    5, // Hidden Layer size
+    6, // Hidden Layer size
     3, // Output Size
     () => Math.random() * 2 - 1
 )
@@ -84,4 +84,31 @@ export const grow = (snake) => {
         parent = snake.tail[snake.tail.length - 1].position
     }
     snake.tail.push(SnakeBody(new p5.Vector(parent.x, parent.y), new p5.Vector(parent.x, parent.y)))
+}
+
+export const fittestSnake = (snakes) => {
+    calculateFitness(snakes)
+    let firstAlive = snakes.filter(snake => snake.health > 0 ? true : false)
+    if (!firstAlive || firstAlive.length == 0) {
+        return snakes[0]
+    } else {
+        firstAlive = firstAlive[0]
+    }
+    return snakes.filter(snake => snake.health > 0 ? true : false).reduce((result, next) => {
+        return (next.health > 0 && next.fitness > result.fitness) ? next : result
+    }, firstAlive)
+}
+
+export const nearestSnake = (population, position) => {
+    const nearest = population
+        .filter(creature => creature.health > 0 ? true : false)
+        .map(creature => ({
+            dist: p5.Vector.dist(position, creature.position),
+            creature: creature
+        }))
+        .filter(next => next.dist > 0 ? true : false)
+        .sort((a,b) => a.dist > b.dist ? 1 : -1)
+    
+    return nearest.length > 0 ? nearest[0].creature : false
+        
 }

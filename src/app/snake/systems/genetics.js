@@ -141,6 +141,7 @@ const simulation = (scene) => {
         scene.simulation.generation++
 
         scene.simulation.stats.push(Object.assign({}, scene.simulation.last))
+        scene.selection.snake = scene.snakes.reduce((result, next) => next.id == 1 ? next : result, scene.snakes[0])
     }
 
     const checkCounter = () => {
@@ -163,7 +164,7 @@ const simulation = (scene) => {
             lastHash = newHash
             hashCounter = 0
         }
-        return hashCounter < 20
+        return hashCounter < scene.config.staleFactor
     }
 
     const simulate = () => {

@@ -3,6 +3,7 @@ import snakesDrawer from './drawSnakes'
 import drawFood from './drawFood'
 import drawNeuralNet from '../../systems/drawNeuralNet'
 import drawGenetics from './drawGenetics'
+import drawIdPanel from './drawIdPanel'
 
 
 
@@ -20,13 +21,20 @@ const draw = function(scene) {
         canvas.rect(0, 0, scene.config.width, scene.config.height)
 
         drawSnakes()
-        drawFood(canvas, scene.diet)
+        drawFood(canvas, scene.diet, scene)
 
-        drawNeuralNet(scene.snakes[0].net, 'ID: ' + scene.snakes[0].id, scene.nnCanvas)
-        scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
+        if (scene.selection.snake) {
+            drawNeuralNet(scene.selection.snake.net, 'ID: ' + scene.selection.snake.id, scene.nnCanvas)
+            scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
+
+            drawIdPanel(scene.idCanvas, scene)
+            scene.canvas.image(scene.idCanvas, scene.config.width, scene.nnCanvas.height)
+        }
 
         drawGenetics(scene.genCanvas, scene)
         scene.canvas.image(scene.genCanvas, 0, scene.canvas.height - scene.genCanvas.height)
+
+        
     }    
 
 }

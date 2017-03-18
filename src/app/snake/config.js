@@ -13,10 +13,11 @@ const configuration = {
     simulation: {
         lifespan: 250000
     },
-    snakescount: 100,
+    snakescount: 200,
     rightPanel,
     bottomPanel,
-    cellSize: 10,
+    cellSize: 20,
+    staleFactor: 3,
     width: window.innerWidth - rightPanel.width,
     height: window.innerHeight - bottomPanel.height,
     center: {
@@ -25,7 +26,12 @@ const configuration = {
     },
     colors: {
         food: [255, 0, 0],
-        creature: [0, 200, 0]
+        creature: [0, 200, 0],
+        selected: [235, 117, 2],
+        maxFitness: [235, 117, 2],
+        meanFitness: [255,255,255],
+        eaten: [220, 1, 40],
+        starved: [61, 202, 1]
     }
 
 }
