@@ -2,17 +2,29 @@ import p5 from 'p5'
 import config from '../config'
 import { NeuralNet } from '../../types/neural'
 
+export const pixel2cell = (pixels) => Math.round(pixels / config.cellSize)
+
 export const SnakeNeuralNet = () => NeuralNet(
-    8, // Input Size
+    11, // Input Size
     1, // Hidden Layers number
-    6, // Hidden Layer size
-    3, // Output Size
+    11, // Hidden Layer size
+    4, // Output Size
     () => Math.random() * 2 - 1
 )
+
+
 
 export const Snake = (position) => {
     return {
         position,
+        cell: {
+            x: pixel2cell(position.x),
+            y: pixel2cell(position.y)
+        },
+        destCell: {
+            x: pixel2cell(position.x),
+            y: pixel2cell(position.y)
+        },
         tail: [
             SnakeBody(new p5.Vector(position.x, position.y),new p5.Vector(position.x, position.y))
         ],
@@ -30,7 +42,9 @@ export const Snake = (position) => {
         generation: 0,
         category: 'random',
         elitecount: 0,
-        food: false
+        food: false,
+        vCenter: new p5.Vector(0,0),
+        vCenterDirection: new p5.Vector(0,0)
     }
 }
 
@@ -38,6 +52,14 @@ export const SnakeBody = (position, destination) => {
     return {
         position,
         destination,
+        cell: {
+            x: pixel2cell(position.x),
+            y: pixel2cell(position.y)
+        },
+        destCell: {
+            x: pixel2cell(destination.x),
+            y: pixel2cell(destination.y)
+        },
         velocity: new p5.Vector(0,0)
     }
 }
@@ -59,10 +81,15 @@ export const calculateFitness = (snakes) => {
 
 export const setDestination = (x, y, snake) => {
     snake.destination = new p5.Vector(x, y)
+    snake.destCell.x = Math.round(x / config.cellSize)
+    snake.destCell.y = Math.round(y / config.cellSize)
+
     snake.velocity = new p5.Vector(snake.destination.x - snake.position.x, snake.destination.y - snake.position.y).div(config.speed)
     
     snake.tail.reduce((prev, tail) => {
         tail.destination = new p5.Vector(prev.position.x, prev.position.y)
+        tail.destCell.x = Math.round(prev.position.x / config.cellSize)
+        tail.destCell.y = Math.round(prev.position.y / config.cellSize)
         tail.velocity = new p5.Vector(tail.destination.x - tail.position.x, tail.destination.y - tail.position.y).div(config.speed)
         return tail
     }, snake)

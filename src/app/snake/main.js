@@ -1,5 +1,6 @@
 import p5 from 'p5'
 import p5dom from 'p5/lib/addons/p5.dom'
+import dat from 'dat-gui'
 import config from './config'
 import scene from './scene'
 import sceneUpdater from './systems/updateScene'
@@ -54,15 +55,17 @@ const sketch = function(p) {
             case 'f':
                 scene.ui.fantoms = !scene.ui.fantoms;
                 break;          
-            default:
+            case 'p':
                 scene.active = !scene.active
+                break;
+            default:
+                //scene.active = !scene.active
         }
         
     }
 
     p.mouseClicked = function(event, a, b) {
         mouseSelection.pointSelect(new p5.Vector(event.x, event.y))
-        scene.active = true
     }
 
 }
@@ -72,10 +75,42 @@ export default class MainSketch {
         this.element = element
         this.myp5 = false
         this.setup()
+        this.setupGUI()
     }
 
     setup = function() {
         this.myp5 = new p5(sketch, this.element)
+    }
+
+    setupGUI = () => {
+        var gui = new dat.gui.GUI({
+            autoPlace: false
+        })
+        document.getElementById('moveGUI').append(gui.domElement)
+
+        gui.add(scene, 'active').listen()
+        gui.add(scene, 'timeScale',1, 200).step(1).listen()
+        gui.add(config, 'speed',{
+            Fast: 1,
+            Normal: 5,
+            Slow: 10
+        })
+
+        let folderNeural = gui.addFolder('Neural')
+        folderNeural.add(scene, 'aiStrategy',0, 2).step(1)
+        folderNeural.open()
+
+        let folderGenetics = gui.addFolder('Genetics')
+        folderGenetics.add(scene, 'mutationRate',0.01, 0.5).step(0.01).listen()
+        folderGenetics.add(scene, 'eliteRate', 0.1, 0.9).step(0.05).listen()
+        folderGenetics.add(scene, 'randomRate', 0, 0.5).step(0.05).listen()
+        folderGenetics.open()
+
+        
+
+
+        this.gui = gui
+
     }
 
 }

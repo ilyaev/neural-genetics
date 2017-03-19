@@ -22,3 +22,9 @@ export const spawnFood = (diet, x, y, snakeId) => {
     food.snakeId = snakeId
     diet.push(food)
 }
+
+export const relocate = (food) => {
+    food.position.x = Math.random() * (config.width - config.cellSize * 2) + config.cellSize
+    food.position.y = Math.random() * (config.height - config.cellSize * 2) + config.cellSize
+    food.active = true
+}

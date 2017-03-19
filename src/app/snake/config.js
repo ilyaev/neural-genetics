@@ -13,11 +13,12 @@ const configuration = {
     simulation: {
         lifespan: 250000
     },
-    snakescount: 200,
+    snakescount: 100,
+    aiStrategy: 2,
     rightPanel,
     bottomPanel,
     cellSize: 20,
-    staleFactor: 3,
+    staleFactor: 5,
     width: window.innerWidth - rightPanel.width,
     height: window.innerHeight - bottomPanel.height,
     center: {

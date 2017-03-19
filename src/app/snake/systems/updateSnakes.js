@@ -16,8 +16,10 @@ const update = function(scene) {
     const maxY = config.height
     const cellSize = config.cellSize
     const halfCellSize = cellSize / 2
-    const cWidth = Math.round(maxX / cellSize)
-    const cHeight = Math.round(maxY / cellSize)
+    const cWidth = Snake.pixel2cell(maxX)
+    const cHeight = Snake.pixel2cell(maxY)
+
+    let strategies = []
 
     const calculate = (net) => {
         Neural.calculateNetOutput(net)
@@ -25,17 +27,16 @@ const update = function(scene) {
     }
 
     const validateCommand = (dx, dy, snake) => {
-        const cellX = Math.round(snake.position.x / cellSize) + dx
-        const cellY = Math.round(snake.position.y / cellSize) + dy
+        const cellX = snake.cell.x + dx
+        const cellY = snake.cell.y + dy
+
         if (cellX < 0 || cellX > cWidth || cellY < 0 || cellY > cHeight) {
             return false
         }
         let result = true
         snake.tail.forEach(tail => {
             if (result) {
-                const tX = Math.round(tail.position.x / cellSize)
-                const tY = Math.round(tail.position.y / cellSize)
-                if (tX == cellX && tY == cellY) {
+                if (tail.cell.x == cellX && tail.cell.y == cellY) {
                     result = false
                 }
             }
@@ -43,24 +44,27 @@ const update = function(scene) {
         return result
     }
 
-    const getNeighboursVector = (snake) => {
-        const coords = [[-1,0],[1,0],[0,-1],[0,1]].map(pair => {
-            const tX = Math.round(snake.position.x / cellSize) + pair[0]
-            const tY = Math.round(snake.position.y / cellSize) + pair[1]
-            return [tX, tY]
-        })
+    const inputAroundVector = (snake) => {
+        const coords = [[-1,0],[1,0],[0,-1],[0,1]].map(pair => 
+            [snake.cell.x + pair[0], snake.cell.y + pair[1]]
+        )
 
         let result = [1,1,1,1]
 
         snake.tail.forEach(tail => {
-            const tX = Math.round(tail.position.x / cellSize)
-            const tY = Math.round(tail.position.y / cellSize)
+            const tX = tail.cell.x
+            const tY = tail.cell.y
             coords.forEach((pair, index) => {
                 if (pair[0] == tX && pair[1] == tY) {
                     result[index] = -1
                 } else if (tX < 0 || tX > cWidth || tY < 0 || tY > cHeight) {
                     result[index] = -1
                 }
+
+                if (result[index] == 1) {
+                    //for(int x = )
+                }
+
             })
         })
 
@@ -68,66 +72,158 @@ const update = function(scene) {
         
     }
 
-    const generateCommand = (snake) => {
+    const inpuSnakeCenterVector = (snake) => {
+        const result = [].concat([snake]).concat(snake.tail)
+            .reduce((sum, next) => {
+                sum.v.add(next.position)
+                sum.c += 1
+                return sum
+            }, {v: new p5.Vector(0,0), c: 0})
+       
+       result.v.div(result.c)
+       const desired = p5.Vector.sub(result.v, snake.position).setMag(1)
 
-        const desired = p5.Vector.sub(snake.position, snake.food.position).setMag(1)
-        const nV = getNeighboursVector(snake)
-        const input = [
+       return [
             desired.x,
-            desired.y,
-            snake.dx,
-            snake.dy,
-            // scene.canvas.map(snake.position.x, 0, maxX, -1, 1),
-            // scene.canvas.map(snake.position.y, 0, maxY, -1, 1)
-            // snake.position.x < 100 ? snake.position.x / 100 : 0,
-            // snake.position.y < 100 ? snake.position.y / 100 : 0,
-            // snake.position.x > (maxX - 100) ? 1 - (maxX - snake.position.x) / 100 : 0,
-            // snake.position.y > (maxY - 100) ? 1 - (maxY - snake.position.y) / 100 : 0,
-            //snake.tail.length / 100 * 2 - 1
-        ].concat(nV)
+            desired.y
+        ]
+    }
 
-        let dx = 0
-        let dy = 0
+    const inputFoodVector = (snake) => {
+        const desired = p5.Vector.sub(snake.position, snake.food.position).setMag(1)
+        return [
+            desired.x,
+            desired.y
+        ]
+    }
+
+    const inputSnakeVelocity = (snake) => {
+        return [
+            snake.dx,
+            snake.dy
+        ]
+    }
+
+    const strategyOne = (snake) => {
+        const input = []
+            .concat(inputFoodVector(snake))
+            .concat(inputSnakeVelocity(snake))
+            .concat(inputAroundVector(snake))
 
         Neural.setNetInputValues(snake.net, input)
         const output = calculate(snake.net)
+
+        let dx = 0
+        let dy = 0
 
         if (Math.abs(output[0]) > Math.abs(output[1])) {
             dx = output[0] > 0 ? 1 : -1
         } else {
             dy = output[1] > 0 ? 1 : -1
         }
+
+        return [dx, dy]
+    }
+
+    const strategyTwo = (snake) => {
+        const input = []
+            .concat(inputFoodVector(snake))
+            .concat(inputSnakeVelocity(snake))
+            .concat(inputAroundVector(snake))
+
+        Neural.setNetInputValues(snake.net, input)
+        const output = calculate(snake.net)
+
+        return outputVector4(output)
+    }
+
+    const inputSnakeSize = (snake) => {
+        return [
+            scene.canvas.map(snake.tail.length, 0, 20, -1, 1) * -1
+        ]
+    }
+
+    const strategyThree = (snake) => {
+        const input = []
+            .concat(inputFoodVector(snake))
+            .concat(inpuSnakeCenterVector(snake))
+            .concat(inputSnakeVelocity(snake))
+            .concat(inputAroundVector(snake))
+            .concat(inputSnakeSize(snake))
+
+        Neural.setNetInputValues(snake.net, input)
+        const output = calculate(snake.net)
+
+        return outputVector4(output)
+    }
+
+    const outputVector2 = (output) => {
+        let dx = 0
+        let dy = 0
+
+        if (Math.abs(output[0]) > Math.abs(output[1])) {
+            dx = output[0] > 0 ? 1 : -1
+        } else {
+            dy = output[1] > 0 ? 1 : -1
+        }
+
+        return [dx, dy]
+    }
+
+    const outputVector4 = (output) => {
+        let signal = 0
+        let maxVal = -100
+
+        output.forEach((value, index) => {
+            if (value > maxVal) {
+                maxVal = value
+                signal = index
+            }
+        })
+
+        const signals = [
+            [0, 1],
+            [0, -1],
+            [1, 0],
+            [-1, 0]
+        ]
+
+        const dx = signals[signal][0]
+        const dy = signals[signal][1]
+
+        return [dx, dy]
+    }
+
+    const generateCommand = (snake) => {
+
+        const [dx, dy] = strategies[scene.aiStrategy](snake)
+
         if (validateCommand(dx, dy, snake)) {
             snake.dx = dx
             snake.dy = dy
         }
 
         Snake.setDestination(snake.position.x + config.cellSize * snake.dx, snake.position.y + config.cellSize * snake.dy, snake)
+
         return snake
     }
 
     const move = (snake) => {
-        [snake].concat(snake.tail).forEach(body => body.position.add(body.velocity))
+        [snake].concat(snake.tail).forEach(body => {
+            body.position.add(body.velocity)
+            body.cell.x = Snake.pixel2cell(body.position.x)
+            body.cell.y = Snake.pixel2cell(body.position.y)
+        })
         return snake
     }
 
     const collisionCheck = (snake) => {
         const {x, y} = snake.destination
-        const cellX = Math.round(x / cellSize)
-        const cellY = Math.round(y / cellSize)
+        const tailHit = snake.tail.reduce((result, tail) => {
+            return result ? result : (tail.cell.x == snake.destCell.x && tail.cell.y == snake.destCell.y)
+        }, false)
 
-        let result = true
-        snake.tail.forEach(tail => {
-            if (result) {
-                const tX = Math.round(tail.position.x / cellSize)
-                const tY = Math.round(tail.position.y / cellSize)
-                if (tX == cellX && tY == cellY) {
-                    result = false
-                }
-            }
-        })
-
-        if (!result || x >= maxX || x <= 0 || y >= maxY || y <= 0) {
+        if (tailHit || x >= maxX || x <= 0 || y >= maxY || y <= 0) {
             snake.health = 0
             snake.food.active = false
         }
@@ -149,15 +245,33 @@ const update = function(scene) {
         }
         if (p5.Vector.dist(snake.position, snake.food.position) < cellSize) {
             Snake.grow(snake)
-            snake.food.position.x = Math.random() * maxX
-            snake.food.position.y = Math.random() * maxY
-            snake.food.active = true
+            Food.relocate(snake.food)
             snake.score += 1
         }
         return snake
     }
 
+    const updateSelection = () => {
+        if (scene.selection.snake && scene.selection.snake.health <= 0) {
+            scene.selection.snake.selected = false
+            scene.selection.snake = Snake.fittestSnake(scene.snakes)
+            scene.selection.snake.selected = true
+        }
+    }
+
+    const initStrategies = () => {
+        if (!strategies.length)  {
+            strategies = [
+                strategyOne,
+                strategyTwo,
+                strategyThree
+            ]
+        }
+    }
+
     return () => {
+
+        initStrategies()
 
         snakes
             .filter(aliveSnakesFilter)
@@ -170,12 +284,10 @@ const update = function(scene) {
                 generateCommand
             ))
 
-        if (scene.selection.snake && scene.selection.snake.health <= 0) {
-            scene.selection.snake.selected = false
-            scene.selection.snake = Snake.fittestSnake(scene.snakes)
-            scene.selection.snake.selected = true
-        }
+        updateSelection()
+        
     }
+    
 
 }
 

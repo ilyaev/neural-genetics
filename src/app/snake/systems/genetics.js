@@ -27,7 +27,7 @@ const simulation = (scene) => {
                 return one
             })
             .sort((a,b) => a.fitness > b.fitness ? -1 : 1)
-            .slice(0, scene.snakes.length * 0.1 )
+            .slice(0, scene.snakes.length * 0.2 )
             .map((one,index) => {
                 one.id = index + 1
                 one.elitecount += 1
@@ -92,7 +92,7 @@ const simulation = (scene) => {
 
     const crossover = (population, maxFitness) => {
 
-        while(population.length < scene.snakes.length * 0.9) {
+        while(population.length < scene.snakes.length * 0.95) {
             
             let [indexMale, parentMale] = getNextParent(maxFitness)
             let [indexFemale, parentFemale] = getNextParent(maxFitness, indexMale)
@@ -164,7 +164,7 @@ const simulation = (scene) => {
             lastHash = newHash
             hashCounter = 0
         }
-        return hashCounter < scene.config.staleFactor
+        return hashCounter < (scene.config.staleFactor * scene.config.speed)
     }
 
     const simulate = () => {

@@ -21,6 +21,7 @@ snakes[0].selected = true
 
 const scene = {
     timeScale: 1,
+    aiStrategy: config.aiStrategy,
     config,
     snakes,
     diet,
@@ -28,6 +29,9 @@ const scene = {
     selection: {
         snake: snakes[0]
     },
+    mutationRate: 0.1,
+    eliteRate: 0.2,
+    randomRate: 0.1,
     simulation: {
         last: {
             generation: 1,
@@ -48,5 +52,7 @@ const scene = {
     },
     active: true
 }
+
+
 
 export default scene
