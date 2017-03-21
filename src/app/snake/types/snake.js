@@ -1,13 +1,24 @@
 import p5 from 'p5'
 import config from '../config'
+import scene from '../scene'
 import { NeuralNet } from '../../types/neural'
 
 export const pixel2cell = (pixels) => Math.round(pixels / config.cellSize)
 
-export const SnakeNeuralNet = () => NeuralNet(
-    11, // Input Size
-    1, // Hidden Layers number
-    11, // Hidden Layer size
+
+export const calcInputSize = () => {
+    const result = Object.keys(config.inputSize).reduce((result, next) => {
+        console.log(next, scene[next], config.inputSize[next])
+        return result + (scene[next] ? config.inputSize[next] : 0)
+    }, 0)
+
+    return result
+}
+
+export const SnakeNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 1, inputSize = 12) => NeuralNet(
+    inputSize, // Input Size
+    hiddenLevels, // Hidden Layers number
+    neuronsPerLevel, // Hidden Layer size
     4, // Output Size
     () => Math.random() * 2 - 1
 )
@@ -31,11 +42,11 @@ export const Snake = (position) => {
         length: 1,
         dx: 0,
         dy: 0,
-        net: new SnakeNeuralNet(),
+        net: new SnakeNeuralNet(scene ? scene.neuronsPerLevel : 7, scene ? scene.hiddenLevels : 1, scene ? scene.inputSize : 12),
         velocity: new p5.Vector(0,0),
         destination: new p5.Vector(position.x, position.y),
         age: 0,
-        health: 100,
+        health: 150,
         id: -1,
         fitness: 0,
         score: 0,

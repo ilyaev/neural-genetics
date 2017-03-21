@@ -22,10 +22,10 @@ const draw = function(scene) {
 
             canvas.push()
                 canvas.translate(snake.position.x, snake.position.y)
-                canvas.fill(...config.colors.creature, 150)
+                canvas.fill(...config.colors.creature, 255)
                 canvas.noStroke()
                 if (snakeSelected) {
-                    canvas.scale(2)
+                    canvas.scale(1.4)
                     canvas.fill(...config.colors.selected, 255)
                 }
                 canvas.rect(...config.cellRectParams)
@@ -43,9 +43,9 @@ const draw = function(scene) {
                 canvas.push()
                     canvas.noStroke()
                     canvas.translate(tail.position.x, tail.position.y)
-                    canvas.fill(...config.colors.creature, 75)
+                    canvas.fill(...config.colors.creature, 255)
                     if (snakeSelected) {
-                        canvas.fill(...config.colors.selected, 200)
+                        canvas.fill(...config.colors.selected, 255)
                     }
                     canvas.rect(...config.cellRectParams)
                 canvas.pop()

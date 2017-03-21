@@ -1,8 +1,8 @@
 import p5 from 'p5'
 import p5dom from 'p5/lib/addons/p5.dom'
 import dat from 'dat-gui'
-import config from './config'
-import scene from './scene'
+import config, {updateCellSize} from './config'
+import scene, {initScene, resetSimulation} from './scene'
 import sceneUpdater from './systems/updateScene'
 import sceneDrawer from './systems/drawScene'
 import mouseSelector from './systems/mouseSelection'
@@ -11,6 +11,20 @@ import mouseSelector from './systems/mouseSelection'
 const updateScene = sceneUpdater(scene)
 const drawScene = sceneDrawer(scene)
 const mouseSelection = mouseSelector(scene)()
+
+const restartSketch = (p) => {
+    initScene()
+    resetSimulation()
+    if (scene.nextCellSize != config.cellSize) {
+        config.cellSize = scene.nextCellSize
+        updateCellSize(scene.nextCellSize)
+    }
+    scene.nnCanvas = p.createGraphics(config.rightPanel.width, 300)
+    scene.genCanvas = p.createGraphics(window.innerWidth, config.bottomPanel.height)
+    scene.idCanvas = p.createGraphics(config.rightPanel.width, window.innerHeight - scene.genCanvas.height - scene.nnCanvas.height)
+}
+
+const ui = scene.ui
 
 
 const sketch = function(p) {
@@ -58,6 +72,9 @@ const sketch = function(p) {
             case 'p':
                 scene.active = !scene.active
                 break;
+            case 'r':
+                restartSketch(p)
+                break;
             default:
                 //scene.active = !scene.active
         }
@@ -82,29 +99,54 @@ export default class MainSketch {
         this.myp5 = new p5(sketch, this.element)
     }
 
+    Restart = function() {
+        restartSketch(this.myp5)
+    }
+
     setupGUI = () => {
         var gui = new dat.gui.GUI({
-            autoPlace: false
+            autoPlace: false,
+            width: 300
         })
+
+        //guiTest.__controllers[0].domElement.style = 'width:350px';
+
         document.getElementById('moveGUI').append(gui.domElement)
 
-        gui.add(scene, 'active').listen()
-        gui.add(scene, 'timeScale',1, 200).step(1).listen()
+        gui.add(scene, 'active').name('Active').listen()
+        gui.add(scene, 'nextCellSize', 2, 100).step(2).name('Snake Size').listen()
+        gui.add(ui, 'fantoms').name('Fantoms').listen()
+        gui.add(scene, 'timeScale',1, 200).name('TimeScale').step(1).listen()
         gui.add(config, 'speed',{
             Fast: 1,
             Normal: 5,
             Slow: 10
-        })
+        }).name('Speed')
+
+        gui.add(this, 'Restart').name('Restart Simulation')
 
         let folderNeural = gui.addFolder('Neural')
-        folderNeural.add(scene, 'aiStrategy',0, 2).step(1)
+        //folderNeural.add(scene, 'aiStrategy',0, 3).step(1).name('Input Scheme')
+        folderNeural.add(scene, 'neuronsPerLevel', 1, 20).step(1).name('Nodes per Level')
+        folderNeural.add(scene, 'hiddenLevels', 1, 4).step(1).name('Levels')
         folderNeural.open()
 
+        let folderNeuralInputs = folderNeural.addFolder('Input')
+        folderNeuralInputs.add(scene, 'iFoodV2').name('Food Direction')
+        folderNeuralInputs.add(scene, 'iSnakeCenterV2').name('Snake Center')
+        folderNeuralInputs.add(scene, 'iSnakeVelocityV2').name('Velocity')
+        folderNeuralInputs.add(scene, 'iSnakeAroundV4').name('Close Neighbours')
+        folderNeuralInputs.add(scene, 'iSnakeTailV2').name('Tail Direction')
+
+
         let folderGenetics = gui.addFolder('Genetics')
-        folderGenetics.add(scene, 'mutationRate',0.01, 0.5).step(0.01).listen()
-        folderGenetics.add(scene, 'eliteRate', 0.1, 0.9).step(0.05).listen()
-        folderGenetics.add(scene, 'randomRate', 0, 0.5).step(0.05).listen()
+        folderGenetics.add(scene, 'mutationRate',0.01, 0.5).step(0.01).listen().name('Mutation Rate')
+        folderGenetics.add(scene, 'eliteRate', 0.1, 0.9).step(0.05).listen().name('Elite Rate')
+        folderGenetics.add(scene, 'randomRate', 0, 0.5).step(0.05).listen().name('Random Rate')
         folderGenetics.open()
+        
+
+        
 
         
 

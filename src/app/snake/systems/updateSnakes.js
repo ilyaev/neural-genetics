@@ -20,6 +20,7 @@ const update = function(scene) {
     const cHeight = Snake.pixel2cell(maxY)
 
     let strategies = []
+    let inputs = []
 
     const calculate = (net) => {
         Neural.calculateNetOutput(net)
@@ -72,7 +73,7 @@ const update = function(scene) {
         
     }
 
-    const inpuSnakeCenterVector = (snake) => {
+    const inputSnakeCenterVector = (snake) => {
         const result = [].concat([snake]).concat(snake.tail)
             .reduce((sum, next) => {
                 sum.v.add(next.position)
@@ -97,6 +98,17 @@ const update = function(scene) {
         ]
     }
 
+    const inputTailVector = (snake) => {
+        if (!snake.tail.length) {
+            return [0,0]
+        }
+        const desired = p5.Vector.sub(snake.position, snake.tail[snake.tail.length - 1].position).setMag(1)
+        return [
+            desired.x,
+            desired.y
+        ]
+    }
+
     const inputSnakeVelocity = (snake) => {
         return [
             snake.dx,
@@ -113,16 +125,7 @@ const update = function(scene) {
         Neural.setNetInputValues(snake.net, input)
         const output = calculate(snake.net)
 
-        let dx = 0
-        let dy = 0
-
-        if (Math.abs(output[0]) > Math.abs(output[1])) {
-            dx = output[0] > 0 ? 1 : -1
-        } else {
-            dy = output[1] > 0 ? 1 : -1
-        }
-
-        return [dx, dy]
+        return outputVector2(outerHeight)
     }
 
     const strategyTwo = (snake) => {
@@ -146,10 +149,24 @@ const update = function(scene) {
     const strategyThree = (snake) => {
         const input = []
             .concat(inputFoodVector(snake))
-            .concat(inpuSnakeCenterVector(snake))
+            .concat(inputSnakeCenterVector(snake))
             .concat(inputSnakeVelocity(snake))
             .concat(inputAroundVector(snake))
             .concat(inputSnakeSize(snake))
+
+        Neural.setNetInputValues(snake.net, input)
+        const output = calculate(snake.net)
+
+        return outputVector4(output)
+    }
+
+    const strategyFour = (snake) => {
+        const input = []
+            .concat(inputFoodVector(snake))
+            .concat(inputSnakeCenterVector(snake))
+            .concat(inputSnakeVelocity(snake))
+            .concat(inputAroundVector(snake))
+            .concat(inputTailVector(snake))
 
         Neural.setNetInputValues(snake.net, input)
         const output = calculate(snake.net)
@@ -194,9 +211,26 @@ const update = function(scene) {
         return [dx, dy]
     }
 
+    const customStrategy = (snake) => {
+        let result = []
+        
+        Object.keys(config.inputSize).forEach((input, index) => {
+            if (scene[input] && inputs[input]) {
+                result = result.concat(inputs[input](snake))
+            }
+        })
+
+        Neural.setNetInputValues(snake.net, result)
+        const output = calculate(snake.net)
+
+        return outputVector4(output)
+    }
+
     const generateCommand = (snake) => {
 
-        const [dx, dy] = strategies[scene.aiStrategy](snake)
+        //const [dx, dy] = strategies[scene.aiStrategy](snake)
+
+        const [dx, dy] = customStrategy(snake)
 
         if (validateCommand(dx, dy, snake)) {
             snake.dx = dx
@@ -247,7 +281,14 @@ const update = function(scene) {
             Snake.grow(snake)
             Food.relocate(snake.food)
             snake.score += 1
+            snake.health = 150 + snake.score * 20
         }
+
+        snake.health--
+        if (snake.health <= 0) {
+            snake.food.active = false
+        }
+        
         return snake
     }
 
@@ -264,8 +305,18 @@ const update = function(scene) {
             strategies = [
                 strategyOne,
                 strategyTwo,
-                strategyThree
+                strategyThree,
+                strategyFour
             ]
+
+            inputs = {
+                iFoodV2: inputFoodVector,
+                iSnakeCenterV2: inputSnakeCenterVector,
+                iSnakeVelocityV2: inputSnakeVelocity,
+                iSnakeAroundV4: inputAroundVector,
+                iSnakeTailV2: inputTailVector,
+            }
+
         }
     }
 

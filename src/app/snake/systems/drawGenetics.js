@@ -11,6 +11,8 @@ const colors = {
     starved: [61, 202, 1]
 }
 
+let prevGeneration = -1
+
 const drawCharts = (canvas, scene) => {
 
     const stats = scene.simulation.stats
@@ -70,11 +72,6 @@ const drawCharts = (canvas, scene) => {
         Object.keys(vertexes).forEach(key => {
             if (typeof colors[key] != 'undefined') {
                 canvas.stroke(...colors[key])
-                if (key == 'meanFitness') {
-                    canvas.strokeWeight(3)
-                } else {
-                    canvas.strokeWeight(1)
-                }
                 canvas.beginShape()
                     vertexes[key].forEach(vertexParams => canvas.vertex(...vertexParams))
                 canvas.endShape()
@@ -95,13 +92,21 @@ const drawGenetics = (canvas, scene) => {
         canvas.counter = -1
     }
 
-    canvas.counter++
-
-    if (canvas.counter < 30 && canvas.counter > 0) {
+    if (canvas.counter == simulation.last.generation) {
         return
     }
 
-    canvas.counter = 0
+    let globalMaxes = {
+        maxFitness: 0,
+        meanFitness: 0,
+    }
+
+    globalMaxes = simulation.stats.reduce((sum, stat) => {
+        Object.keys(stat).forEach(key => sum[key] = stat[key] > sum[key] ? stat[key] : sum[key])
+        return sum
+    }, globalMaxes)
+
+    canvas.counter = simulation.last.generation
 
     const last = simulation.last
     
@@ -112,9 +117,9 @@ const drawGenetics = (canvas, scene) => {
     const prev = simulation.stats.length > 0 ? simulation.stats[simulation.stats.length - 1] : false
     
     const texts = [
-        'Generation: ' + last.generation + ' ( ' + Math.round((last.age / last.lifespan)*100) + '% )',
-        'Mean Fitness: ' + last.meanFitness,
-        'Max Fitness: ' + last.maxFitness,
+        'Generation: ' + last.generation,
+        'Max Fitness: ' + globalMaxes.maxFitness,
+        'Avg Fitness: ' + Math.round(globalMaxes.meanFitness),
         'Mutations: ' + simulation.mutations
     ]
 
@@ -126,7 +131,7 @@ const drawGenetics = (canvas, scene) => {
     texts.forEach((label, index) => {
         if (label.indexOf('Max Fi') !== -1) {
             canvas.fill(...colors.maxFitness)
-        } else if (label.indexOf('Mean Fi') !== -1) {
+        } else if (label.indexOf('Avg Fi') !== -1) {
             canvas.fill(...colors.meanFitness)
         } else {
             canvas.fill(200)

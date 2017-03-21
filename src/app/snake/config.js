@@ -14,7 +14,7 @@ const configuration = {
         lifespan: 250000
     },
     snakescount: 100,
-    aiStrategy: 2,
+    aiStrategy: 3,
     rightPanel,
     bottomPanel,
     cellSize: 20,
@@ -33,26 +33,34 @@ const configuration = {
         meanFitness: [255,255,255],
         eaten: [220, 1, 40],
         starved: [61, 202, 1]
+    },
+    inputSize: {
+        iFoodV2: 2,
+        iSnakeCenterV2: 2,
+        iSnakeVelocityV2: 2,
+        iSnakeAroundV4: 4,
+        iSnakeTailV2: 2,
     }
 
 }
 
-const rX = Math.ceil(configuration.width / configuration.cellSize)
-const dX = configuration.width - rX * configuration.cellSize
-configuration.width = rX * configuration.cellSize
-configuration.rightPanel.width += dX
+export const updateCellSize = (cellSize) => {
+    const rX = Math.ceil(configuration.width / cellSize)
+    const dX = configuration.width - rX * cellSize
+    configuration.width = rX * cellSize
+    configuration.rightPanel.width += dX
 
-const rY = Math.ceil(configuration.height / configuration.cellSize)
-const dY = configuration.height - rY * configuration.cellSize
-configuration.height = rY * configuration.cellSize
-configuration.bottomPanel.height += dY
+    const rY = Math.ceil(configuration.height / cellSize)
+    const dY = configuration.height - rY * cellSize
+    configuration.height = rY * cellSize
+    configuration.bottomPanel.height += dY
 
-console.log(configuration)
+    configuration.cellRectParams = [-cellSize  / 2 + 1, -cellSize / 2 + 1, cellSize - 1, cellSize - 1]
+    configuration.clusterSize = Math.max(Math.ceil(Math.max(configuration.width, configuration.height) / 10), 100)
+    configuration.center = new p5.Vector(configuration.width / 2, configuration.height / 2)
+}
 
+updateCellSize(configuration.cellSize)
 
-
-configuration.cellRectParams = [-configuration.cellSize  / 2 + 1, -configuration.cellSize / 2 + 1, configuration.cellSize - 1, configuration.cellSize - 1]
-configuration.clusterSize = Math.max(Math.ceil(Math.max(configuration.width, configuration.height) / 10), 100)
-configuration.center = new p5.Vector(configuration.width / 2, configuration.height / 2)
 
 export default configuration
