@@ -1,10 +1,11 @@
 import p5 from 'p5'
 import { Food } from '../types/food'
+import config from '../config'
 
 const drawOne = (p, one) => {
     p.push()
         p.translate(one.position.x, one.position.y)
-        p.ellipse(0, 0, one.size * 2, one.size * 2)
+        p.ellipse(0, 0, config.cellSize, config.cellSize)
     p.pop()
 }
 

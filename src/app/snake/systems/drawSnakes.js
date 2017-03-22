@@ -43,7 +43,7 @@ const draw = function(scene) {
                 canvas.push()
                     canvas.noStroke()
                     canvas.translate(tail.position.x, tail.position.y)
-                    canvas.fill(...config.colors.creature, 255)
+                    canvas.fill(...config.colors.creature, 150)
                     if (snakeSelected) {
                         canvas.fill(...config.colors.selected, 255)
                     }

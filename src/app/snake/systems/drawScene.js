@@ -24,7 +24,7 @@ const draw = function(scene) {
         drawFood(canvas, scene.diet, scene)
 
         if (scene.selection.snake) {
-            drawNeuralNet(scene.selection.snake.net, 'ID: ' + scene.selection.snake.id, scene.nnCanvas)
+            drawNeuralNet(scene.selection.snake.net, '', scene.nnCanvas)
             scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
 
             drawIdPanel(scene.idCanvas, scene)
@@ -33,6 +33,10 @@ const draw = function(scene) {
 
         drawGenetics(scene.genCanvas, scene)
         scene.canvas.image(scene.genCanvas, 0, scene.canvas.height - scene.genCanvas.height)
+
+        if (scene.selection.genetics) {
+            canvas.ellipse(canvas.mouseX, canvas.mouseY, 10,10)
+        }
 
         
     }    

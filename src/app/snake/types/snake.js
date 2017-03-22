@@ -8,7 +8,6 @@ export const pixel2cell = (pixels) => Math.round(pixels / config.cellSize)
 
 export const calcInputSize = () => {
     const result = Object.keys(config.inputSize).reduce((result, next) => {
-        console.log(next, scene[next], config.inputSize[next])
         return result + (scene[next] ? config.inputSize[next] : 0)
     }, 0)
 
@@ -46,7 +45,7 @@ export const Snake = (position) => {
         velocity: new p5.Vector(0,0),
         destination: new p5.Vector(position.x, position.y),
         age: 0,
-        health: 150,
+        health: config.cWidth + config.cHeight,
         id: -1,
         fitness: 0,
         score: 0,

@@ -1,4 +1,4 @@
-const crossover = (male, female, meta) => {
+const crossover = (male, female, meta, mutationRate = 0.1) => {
     let len = Math.round(Math.random()*(male.length / 2)) + 1
     //len = Math.round(Math.random() * 3) + 1
     let maleFirst = true
@@ -9,7 +9,7 @@ const crossover = (male, female, meta) => {
         let mPart = shiftFromArray(male, len)
         let fPart = shiftFromArray(female, len)
 
-        if (Math.random() < 0.1) {
+        if (Math.random() < mutationRate) {
             const mutant = Math.random() * 2 - 1
             const mutPlace = Math.round(Math.random()*len)
             meta.mutations += 1

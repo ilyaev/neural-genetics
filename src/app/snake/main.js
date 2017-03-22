@@ -13,12 +13,12 @@ const drawScene = sceneDrawer(scene)
 const mouseSelection = mouseSelector(scene)()
 
 const restartSketch = (p) => {
-    initScene()
-    resetSimulation()
     if (scene.nextCellSize != config.cellSize) {
         config.cellSize = scene.nextCellSize
         updateCellSize(scene.nextCellSize)
     }
+    initScene()
+    resetSimulation()
     scene.nnCanvas = p.createGraphics(config.rightPanel.width, 300)
     scene.genCanvas = p.createGraphics(window.innerWidth, config.bottomPanel.height)
     scene.idCanvas = p.createGraphics(config.rightPanel.width, window.innerHeight - scene.genCanvas.height - scene.nnCanvas.height)
@@ -45,7 +45,10 @@ const sketch = function(p) {
 
         p.background('black')
 
-        updateScene()
+        if (!scene.selection.genetics) {
+            updateScene()
+        }
+        
         drawScene()
     }
 
@@ -85,6 +88,17 @@ const sketch = function(p) {
         mouseSelection.pointSelect(new p5.Vector(event.x, event.y))
     }
 
+    p.mouseMoved = function(event) {
+
+        let genetics = false
+
+        if (event.y > (scene.canvas.height - scene.genCanvas.height)) {
+            genetics = true
+        }
+
+        scene.selection.genetics = genetics
+    }
+
 }
 
 export default class MainSketch {
@@ -114,7 +128,6 @@ export default class MainSketch {
         document.getElementById('moveGUI').append(gui.domElement)
 
         gui.add(scene, 'active').name('Active').listen()
-        gui.add(scene, 'nextCellSize', 2, 100).step(2).name('Snake Size').listen()
         gui.add(ui, 'fantoms').name('Fantoms').listen()
         gui.add(scene, 'timeScale',1, 200).name('TimeScale').step(1).listen()
         gui.add(config, 'speed',{
@@ -122,6 +135,7 @@ export default class MainSketch {
             Normal: 5,
             Slow: 10
         }).name('Speed')
+        gui.add(scene, 'nextCellSize', 2, 100).step(2).name('Snake Size').listen()
 
         gui.add(this, 'Restart').name('Restart Simulation')
 

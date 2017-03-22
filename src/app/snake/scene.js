@@ -65,11 +65,12 @@ const scene = {
     diet,
     canvas: null,
     selection: {
-        snake: snakes[0]
+        snake: snakes[0],
+        genetics: false
     },
     mutationRate: 0.1,
     eliteRate: 0.2,
-    randomRate: 0.1,
+    randomRate: 0.05,
     simulation: {
         last: {
             generation: 1,

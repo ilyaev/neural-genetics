@@ -12,12 +12,6 @@ const update = function(scene) {
     const snakes = scene.snakes
     const diet = scene.diet
     const config = scene.config
-    const maxX = config.width
-    const maxY = config.height
-    const cellSize = config.cellSize
-    const halfCellSize = cellSize / 2
-    const cWidth = Snake.pixel2cell(maxX)
-    const cHeight = Snake.pixel2cell(maxY)
 
     let strategies = []
     let inputs = []
@@ -31,7 +25,7 @@ const update = function(scene) {
         const cellX = snake.cell.x + dx
         const cellY = snake.cell.y + dy
 
-        if (cellX < 0 || cellX > cWidth || cellY < 0 || cellY > cHeight) {
+        if (cellX < 0 || cellX > config.cWidth || cellY < 0 || cellY > config.cHeight) {
             return false
         }
         let result = true
@@ -58,7 +52,7 @@ const update = function(scene) {
             coords.forEach((pair, index) => {
                 if (pair[0] == tX && pair[1] == tY) {
                     result[index] = -1
-                } else if (tX < 0 || tX > cWidth || tY < 0 || tY > cHeight) {
+                } else if (tX < 0 || tX > config.cWidth || tY < 0 || tY > config.cHeight) {
                     result[index] = -1
                 }
 
@@ -257,7 +251,7 @@ const update = function(scene) {
             return result ? result : (tail.cell.x == snake.destCell.x && tail.cell.y == snake.destCell.y)
         }, false)
 
-        if (tailHit || x >= maxX || x <= 0 || y >= maxY || y <= 0) {
+        if (tailHit || x >= config.width || x <= 0 || y >= config.height || y <= 0) {
             snake.health = 0
             snake.food.active = false
         }
@@ -277,11 +271,11 @@ const update = function(scene) {
         if (!snake.food) {
             return
         }
-        if (p5.Vector.dist(snake.position, snake.food.position) < cellSize) {
+        if (p5.Vector.dist(snake.position, snake.food.position) < config.cellSize) {
             Snake.grow(snake)
             Food.relocate(snake.food)
             snake.score += 1
-            snake.health = 150 + snake.score * 20
+            snake.health = config.cWidth + config.cHeight + snake.score * 10
         }
 
         snake.health--

@@ -27,7 +27,7 @@ const simulation = (scene) => {
                 return one
             })
             .sort((a,b) => a.fitness > b.fitness ? -1 : 1)
-            .slice(0, scene.snakes.length * 0.2 )
+            .slice(0, scene.snakes.length * scene.eliteRate )
             .map((one,index) => {
                 one.id = index + 1
                 one.elitecount += 1
@@ -39,7 +39,7 @@ const simulation = (scene) => {
                 one.score = 0
                 one.tail = []
                 one.length = 0
-                one.health = 100
+                one.health = scene.config.cWidth + scene.config.cHeight
                 one.selected = false
                 one.food = false
                 one.dx = 0
@@ -92,7 +92,7 @@ const simulation = (scene) => {
 
     const crossover = (population, maxFitness) => {
 
-        while(population.length < scene.snakes.length * 0.95) {
+        while(population.length < scene.snakes.length * (1 - scene.randomRate)) {
             
             let [indexMale, parentMale] = getNextParent(maxFitness)
             let [indexFemale, parentFemale] = getNextParent(maxFitness, indexMale)
@@ -102,7 +102,7 @@ const simulation = (scene) => {
                 let mDNA = serializeNet(parentMale.net)
                 let fDNA = serializeNet(parentFemale.net)
 
-                doCrossover(mDNA, fDNA, scene.simulation).forEach(offspringDNA => {
+                doCrossover(mDNA, fDNA, scene.simulation, scene.mutationRate).forEach(offspringDNA => {
                     const offspring = makeNewSnake(population)
                     offspring.category = 'D: ' + parentMale.fitness + ' / ' + parentFemale.fitness
                     populateNet(offspring.net, offspringDNA)
@@ -164,7 +164,7 @@ const simulation = (scene) => {
             lastHash = newHash
             hashCounter = 0
         }
-        return hashCounter < (scene.config.staleFactor * scene.config.speed)
+        return hashCounter < (scene.config.staleFactor * scene.config.speed * Math.max(1, (scene.config.cWidth / 30)))
     }
 
     const simulate = () => {
