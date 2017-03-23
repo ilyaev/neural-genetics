@@ -7,16 +7,18 @@ const draw = function(scene) {
     const config = scene.config
     const diet = scene.diet
 
-    return () => {
+    return (onlyOne = false) => {
 
         const canvas = scene.canvas
 
-        snakes.filter(snake => snake.health > 0).forEach(snake => {
+        const items = onlyOne ? [onlyOne] : snakes
+
+        items.filter(snake => (snake.health > 0 || onlyOne)).forEach(snake => {
 
             const food = snake.food
             const snakeSelected = scene.selection.snake.id == snake.id
 
-            if (!scene.ui.fantoms && !snakeSelected) {
+            if (!scene.ui.fantoms && !snakeSelected && !onlyOne) {
                 return
             }
 
@@ -24,7 +26,7 @@ const draw = function(scene) {
                 canvas.translate(snake.position.x, snake.position.y)
                 canvas.fill(...config.colors.creature, 255)
                 canvas.noStroke()
-                if (snakeSelected) {
+                if (snakeSelected && !onlyOne) {
                     canvas.scale(1.4)
                     canvas.fill(...config.colors.selected, 255)
                 }
@@ -44,7 +46,7 @@ const draw = function(scene) {
                     canvas.noStroke()
                     canvas.translate(tail.position.x, tail.position.y)
                     canvas.fill(...config.colors.creature, 150)
-                    if (snakeSelected) {
+                    if (snakeSelected && !onlyOne) {
                         canvas.fill(...config.colors.selected, 255)
                     }
                     canvas.rect(...config.cellRectParams)

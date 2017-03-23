@@ -18,7 +18,11 @@ const drawIdPanel = (canvas, scene) => {
     canvas.rect(0, 0, canvas.width - 1, canvas.height)
 
 
-    const creature = scene.selection.snake
+    let creature = scene.selection.snake
+
+    if (scene.selection.genetics && scene.simulation.stats[scene.selection.generation]) {
+        creature = scene.simulation.stats[scene.selection.generation].winner
+    }
 
     const rows = []
 
@@ -48,8 +52,6 @@ const drawIdPanel = (canvas, scene) => {
     let input = creature.net.input.map(one => round(one.value))
     while(input.length > 0) {
         const part = input.splice(0, 4)
-        //console.log('inp', input, input.length, part)
-        //sdfsdfs.sdfsdf()
         canvas.text(part.join(', '), 5, tX)
         tX += textSize
     }

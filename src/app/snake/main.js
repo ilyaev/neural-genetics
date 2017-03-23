@@ -94,6 +94,10 @@ const sketch = function(p) {
 
         if (event.y > (scene.canvas.height - scene.genCanvas.height)) {
             genetics = true
+            const rect = scene.genCanvas.chartRect
+            const x = p.mouseX - rect.x
+            const generation = Math.min(Math.round(x / rect.interval), scene.simulation.stats.length)
+            scene.selection.generation = generation
         }
 
         scene.selection.genetics = genetics

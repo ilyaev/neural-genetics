@@ -66,7 +66,8 @@ const scene = {
     canvas: null,
     selection: {
         snake: snakes[0],
-        genetics: false
+        genetics: false,
+        generation: 0
     },
     mutationRate: 0.1,
     eliteRate: 0.2,

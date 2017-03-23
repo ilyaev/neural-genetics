@@ -117,8 +117,11 @@ const simulation = (scene) => {
         age = 0
 
         Snake.calculateFitness(scene.snakes)
+        const theOne = Object.assign({}, scene.snakes.sort((a,b) => a.fitness > b.fitness ? -1 : 1)[0])
 
         const [snakes, maxFitness, meanFitness] = getElite()
+        
+        
 
         scene.simulation.last.maxFitness = maxFitness
         scene.simulation.last.meanFitness = meanFitness
@@ -140,7 +143,7 @@ const simulation = (scene) => {
 
         scene.simulation.generation++
 
-        scene.simulation.stats.push(Object.assign({}, scene.simulation.last))
+        scene.simulation.stats.push(Object.assign({}, scene.simulation.last, {winner: theOne}))
         scene.selection.snake = scene.snakes.reduce((result, next) => next.id == 1 ? next : result, scene.snakes[0])
     }
 

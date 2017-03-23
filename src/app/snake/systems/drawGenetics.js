@@ -17,6 +17,25 @@ const drawCharts = (canvas, scene) => {
 
     const stats = scene.simulation.stats
 
+    const intervals = stats.length
+
+    const chartWidth = canvas.width * 0.75 - 20
+    const chartHeight = canvas.height
+
+    const intervalWidth = intervals > 1 ? chartWidth / (intervals - 1) : 0
+
+    const offsetX = canvas.width * 0.25
+    const offsetY = 0 + chartHeight
+
+    canvas.chartRect = {
+        x: offsetX,
+        y: offsetY,
+        width: chartWidth,
+        height: chartHeight,
+        interval: intervalWidth
+    }
+    
+
     if (stats.length <= 0) {
         return
     }
@@ -33,16 +52,6 @@ const drawCharts = (canvas, scene) => {
     }, globalMaxes)
     
     
-    const intervals = stats.length
-
-    const chartWidth = canvas.width * 0.75 - 20
-    const chartHeight = canvas.height
-
-    const intervalWidth = chartWidth / (intervals - 1)
-
-    const offsetX = canvas.width * 0.25
-    const offsetY = 0 + chartHeight
-
     const vertexes = {}
 
     let nextX = 0

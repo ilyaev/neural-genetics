@@ -250,6 +250,7 @@ const update = function(scene) {
         const tailHit = snake.tail.reduce((result, tail) => {
             return result ? result : (tail.cell.x == snake.destCell.x && tail.cell.y == snake.destCell.y)
         }, false)
+        
 
         if (tailHit || x >= config.width || x <= 0 || y >= config.height || y <= 0) {
             snake.health = 0
