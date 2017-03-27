@@ -6,6 +6,9 @@ import compose from '../../lib/compose'
 
 const finishedMoveFilter = (snake) => p5.Vector.dist(snake.position, snake.destination) < 0.01 ? true : false
 const aliveSnakesFilter = (snake) => snake.health > 0 ? true : false
+const deadMove = (snake, dx, dy) => {
+
+}
 
 const update = function(scene) {
 
@@ -13,8 +16,7 @@ const update = function(scene) {
     const diet = scene.diet
     const config = scene.config
 
-    let strategies = []
-    let inputs = []
+    let inputs = false
 
     const calculate = (net) => {
         Neural.calculateNetOutput(net)
@@ -25,7 +27,7 @@ const update = function(scene) {
         const cellX = snake.cell.x + dx
         const cellY = snake.cell.y + dy
 
-        if (cellX < 0 || cellX > config.cWidth || cellY < 0 || cellY > config.cHeight) {
+        if (cellX <= 0 || cellX > config.cWidth || cellY <= 0 || cellY > config.cHeight) {
             return false
         }
         let result = true
@@ -86,9 +88,16 @@ const update = function(scene) {
 
     const inputFoodVector = (snake) => {
         const desired = p5.Vector.sub(snake.position, snake.food.position).setMag(1)
+        let distance = 0
+        if (snake.food) {
+            distance = Math.abs(snake.position.x - snake.food.position.x) + Math.abs(snake.position.y - snake.food.position.y)
+            distance /= (config.width + config.height)
+        }
+
         return [
             desired.x,
-            desired.y
+            desired.y,
+            distance
         ]
     }
 
@@ -110,62 +119,10 @@ const update = function(scene) {
         ]
     }
 
-    const strategyOne = (snake) => {
-        const input = []
-            .concat(inputFoodVector(snake))
-            .concat(inputSnakeVelocity(snake))
-            .concat(inputAroundVector(snake))
-
-        Neural.setNetInputValues(snake.net, input)
-        const output = calculate(snake.net)
-
-        return outputVector2(outerHeight)
-    }
-
-    const strategyTwo = (snake) => {
-        const input = []
-            .concat(inputFoodVector(snake))
-            .concat(inputSnakeVelocity(snake))
-            .concat(inputAroundVector(snake))
-
-        Neural.setNetInputValues(snake.net, input)
-        const output = calculate(snake.net)
-
-        return outputVector4(output)
-    }
-
     const inputSnakeSize = (snake) => {
         return [
             scene.canvas.map(snake.tail.length, 0, 20, -1, 1) * -1
         ]
-    }
-
-    const strategyThree = (snake) => {
-        const input = []
-            .concat(inputFoodVector(snake))
-            .concat(inputSnakeCenterVector(snake))
-            .concat(inputSnakeVelocity(snake))
-            .concat(inputAroundVector(snake))
-            .concat(inputSnakeSize(snake))
-
-        Neural.setNetInputValues(snake.net, input)
-        const output = calculate(snake.net)
-
-        return outputVector4(output)
-    }
-
-    const strategyFour = (snake) => {
-        const input = []
-            .concat(inputFoodVector(snake))
-            .concat(inputSnakeCenterVector(snake))
-            .concat(inputSnakeVelocity(snake))
-            .concat(inputAroundVector(snake))
-            .concat(inputTailVector(snake))
-
-        Neural.setNetInputValues(snake.net, input)
-        const output = calculate(snake.net)
-
-        return outputVector4(output)
     }
 
     const outputVector2 = (output) => {
@@ -217,23 +174,42 @@ const update = function(scene) {
         Neural.setNetInputValues(snake.net, result)
         const output = calculate(snake.net)
 
-        return outputVector4(output)
+        return outputVector4(output.slice(0, 4)).concat([output.slice(-2)])
     }
 
     const generateCommand = (snake) => {
 
-        //const [dx, dy] = strategies[scene.aiStrategy](snake)
-
-        const [dx, dy] = customStrategy(snake)
+        const [dx, dy, output] = customStrategy(snake)
 
         if (validateCommand(dx, dy, snake)) {
             snake.dx = dx
             snake.dy = dy
+        } else if (snake.tail.length > 0 && !validateCommand(snake.dx, snake.dy, snake)) {
+            [snake.dx, snake.dy] = avoidObstacle(output[0], output[1], snake)
         }
-
+        
         Snake.setDestination(snake.position.x + config.cellSize * snake.dx, snake.position.y + config.cellSize * snake.dy, snake)
 
         return snake
+    }
+
+    const avoidObstacle = (left, right, snake) => {
+        let dx = 0
+        let dy = 0
+
+        if (snake.dy == 0) {
+            dy = left > right ? 1 : -1
+            if (!validateCommand(dx, dy, snake)) {
+                dy *= -1
+            }
+        } else {
+            dx = left > right ? 1 : -1
+            if (!validateCommand(dx, dy, snake)) {
+                dx *= -1
+            }
+        }
+
+        return [dx, dy]
     }
 
     const move = (snake) => {
@@ -276,7 +252,7 @@ const update = function(scene) {
             Snake.grow(snake)
             Food.relocate(snake.food)
             snake.score += 1
-            snake.health = config.cWidth + config.cHeight + snake.score * 10
+            snake.health = config.cWidth + config.cHeight + snake.score * 20
         }
 
         snake.health--
@@ -295,15 +271,8 @@ const update = function(scene) {
         }
     }
 
-    const initStrategies = () => {
-        if (!strategies.length)  {
-            strategies = [
-                strategyOne,
-                strategyTwo,
-                strategyThree,
-                strategyFour
-            ]
-
+    const initInputs = () => {
+        if (!inputs)  {
             inputs = {
                 iFoodV2: inputFoodVector,
                 iSnakeCenterV2: inputSnakeCenterVector,
@@ -311,13 +280,12 @@ const update = function(scene) {
                 iSnakeAroundV4: inputAroundVector,
                 iSnakeTailV2: inputTailVector,
             }
-
         }
     }
 
     return () => {
 
-        initStrategies()
+        initInputs()
 
         snakes
             .filter(aliveSnakesFilter)

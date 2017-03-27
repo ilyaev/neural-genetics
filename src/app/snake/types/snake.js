@@ -14,11 +14,11 @@ export const calcInputSize = () => {
     return result
 }
 
-export const SnakeNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 1, inputSize = 12) => NeuralNet(
+export const SnakeNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 1, inputSize = 9) => NeuralNet(
     inputSize, // Input Size
     hiddenLevels, // Hidden Layers number
     neuronsPerLevel, // Hidden Layer size
-    4, // Output Size
+    6, // Output Size
     () => Math.random() * 2 - 1
 )
 
@@ -41,7 +41,7 @@ export const Snake = (position) => {
         length: 1,
         dx: 0,
         dy: 0,
-        net: new SnakeNeuralNet(scene ? scene.neuronsPerLevel : 7, scene ? scene.hiddenLevels : 1, scene ? scene.inputSize : 12),
+        net: new SnakeNeuralNet(scene ? scene.neuronsPerLevel : 7, scene ? scene.hiddenLevels : 1, scene ? scene.inputSize : 9),
         velocity: new p5.Vector(0,0),
         destination: new p5.Vector(position.x, position.y),
         age: 0,

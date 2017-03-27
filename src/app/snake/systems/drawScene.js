@@ -56,6 +56,11 @@ const draw = function(scene) {
                     canvas.height - scene.genCanvas.height + 1
                 )
 
+                const tSize = scene.genCanvas.height / 15
+
+                canvas.textSize(tSize)
+                canvas.text(scene.selection.generation, rect.x + x - tSize * 2, canvas.height - scene.genCanvas.height + tSize * 1.3)
+
                 const snake = scene.simulation.stats[generation].winner
                 drawSnakes(snake)
             }

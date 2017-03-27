@@ -20,7 +20,7 @@ const configuration = {
     bottomPanel,
     cellSize: 20,
     halfCellSize: 10,
-    staleFactor: 5,
+    staleFactor: 7,
     width: window.innerWidth - rightPanel.width,
     height: window.innerHeight - bottomPanel.height,
     center: {
@@ -37,7 +37,7 @@ const configuration = {
         starved: [61, 202, 1]
     },
     inputSize: {
-        iFoodV2: 2,
+        iFoodV2: 3,
         iSnakeCenterV2: 2,
         iSnakeVelocityV2: 2,
         iSnakeAroundV4: 4,
