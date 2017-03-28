@@ -16,6 +16,8 @@ const configuration = {
     snakescount: 100,
     rightPanel,
     bottomPanel,
+    shipWidth: 20,
+    shipHeight: 30,
     width: window.innerWidth - rightPanel.width,
     height: window.innerHeight - bottomPanel.height,
     center: {

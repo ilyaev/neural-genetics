@@ -10,6 +10,7 @@ export const initScene = () => {
 
     setupShips()
     setupStatics()
+    scene.selection.ship = scene.ships[0]
 }
 
 export const resetSimulation = () => {
@@ -47,6 +48,7 @@ const scene = {
     canvas: null,
     selection: {
         genetics: false,
+        ship: false,
         generation: 0
     },
     Engine: Matter.Engine,
@@ -82,27 +84,20 @@ const setupStatics = () => {
     scene.boundaries = [
         new Boundary(config.center.x, config.height - 20, config.width - 20, 40, {isStatic: true}),
         new Boundary(5, config.center.y, 10, config.height, {isStatic: true}),
-        new Boundary(config.width - 5, config.center.y, 10, config.height, {isStatic: true})
+        new Boundary(config.width - 5, config.center.y, 10, config.height, {isStatic: true}),
+        new Boundary(config.center.x, 5, config.width, 10, {isStatic: true})
     ]
 
     addToWorld(scene.boundaries.map(one => one.body))
 }
 
 const setupShips = () => {
-
-    scene.ships = [
-        new Ship(config.center.x, config.center.y, 130, 30, {})
-    ]
-
-    for(let i = 0 ; i < 20 ; i++) {
-        scene.ships.push(new Ship(Math.random()*(scene.config.width - 50) + 50,Math.random()*(scene.config.height - 350) + 50,50,50))
-    }
-
-    addToWorld(scene.ships.map(one => one.body))
+    scene.ships = []
+    spawnShip(config.center.x, config.center.y)
 }
 
 export const spawnShip = (x, y) => {
-    const ship = new Ship(x, y, Math.random() * 50 + 10, Math.random() * 50 + 10)
+    const ship = new Ship(x, y, config.shipWidth, config.shipHeight)
     scene.ships.push(ship)
     addToWorld(ship.body)
 }
