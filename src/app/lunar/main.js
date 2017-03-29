@@ -6,6 +6,7 @@ import scene, { addToWorld, updatePhysics,spawnShip } from './scene'
 import sceneUpdater from './systems/updateScene'
 import sceneDrawer from './systems/drawScene'
 import mouseSelector from './systems/mouseSelection'
+import sceneCollide from './systems/collideScene'
 import Matter from 'matter-js'
 import Box from './types/box'
 
@@ -13,6 +14,7 @@ import Box from './types/box'
 const updateScene = sceneUpdater(scene)
 const drawScene = sceneDrawer(scene)
 const mouseSelection = mouseSelector(scene)()
+const sceneCollider = sceneCollide(scene)
 
 const restartSketch = (p) => {
     initScene()
@@ -28,29 +30,49 @@ const sketch = function(p) {
         p.createCanvas(window.innerWidth, window.innerHeight)
         scene.nnCanvas = p.createGraphics(config.rightPanel.width, 300)
         scene.canvas = p
+        Matter.Events.on(scene.engine, 'collisionStart', function (event) {
+            event.pairs.forEach(sceneCollider)
+        });
     }
 
     p.draw = function() {
-        updateScene()
-        updatePhysics()
-        drawScene()
+        if (scene.active) {
+            updateScene()
+            drawScene()
+        }
     }
 
     p.mouseClicked = (event) => {
         mouseSelection.pointSelect(new p5.Vector(event.x, event.y))
     }
 
-    p.keyPressed = (event) => {
+    p.keyPressed = function(event) {
         switch (event.key) {
-            case 'n':
-                spawnShip(Math.random() * scene.config.width, Math.random() * scene.config.height)    
-                scene.selection.ship = scene.ships[scene.ships.length - 1]
+            case 'a':
+                scene.timeScale = scene.timeScale == 1 ? 150 : 1
                 break
-            case 'm':
-                spawnShip(scene.config.center.x, scene.config.center.y)
-                scene.selection.ship = scene.ships[scene.ships.length - 1]
+            case 'z':
+                scene.timeScale = scene.timeScale == 1 ? 50 : 1
                 break
+            case 'x':
+                scene.timeScale = scene.timeScale == 1 ? 20 : 1
+                break 
+            case 'c':
+                scene.timeScale = scene.timeScale == 1 ? 10 : 1
+                break
+            case 'v':
+                scene.timeScale = scene.timeScale == 1 ? 5 : 1
+                break          
+            case 'f':
+                scene.ui.fantoms = !scene.ui.fantoms;
+                break;          
+            case 'p':
+                scene.active = !scene.active
+                break;
+            default:
+                scene.active = !scene.active
         }
+        
     }
 
 }

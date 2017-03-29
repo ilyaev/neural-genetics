@@ -27,14 +27,9 @@ const updateShips = function(scene) {
         return ship
     }
 
-    const calculateJetForces = (ship) => {
-        ship.jets.forEach(jet => Math.random() > 0.8 ? jet.force = Math.random() * 0.03 : jet.force = 0)
-        return ship
-    }
-
     const generateCommand = (ship) => {
 
-        const vToLanding = p5.Vector.sub(new p5.Vector(ship.body.position.x, ship.body.position.y), new p5.Vector(scene.config.center.x, scene.config.height - 20)).setMag(1)
+        const vToLanding = p5.Vector.sub(new p5.Vector(ship.body.position.x, ship.body.position.y), ship.target).setMag(1)
 
         const input = [
             (ship.body.position.x / (scene.config.width / 2)) - 1,
@@ -44,11 +39,17 @@ const updateShips = function(scene) {
             vToLanding.y
         ]
 
+        //sdfsdf.sdfsdf()
+
         Neural.setNetInputValues(ship.net, input)
         const output = calculate(ship.net)
 
         ship.jets.forEach((jet, index) => {
-            jet.force = output[index] > 0 ? output[index] * 0.08 : 0
+            const magnitude = index == 2 ? 0.08 : 0.03
+            jet.force = output[index] > 0 ? output[index] * magnitude : 0
+            if (jet.force > 0) {
+                ship.fuel -= output[index]
+            }
         })
 
         return ship
@@ -57,11 +58,10 @@ const updateShips = function(scene) {
     const updateComposer = compose(
         applyJetForces,
         generateCommand
-        //calculateJetForces
     )
 
     return () => {
-        ships.map(updateComposer)
+        ships.filter(ship => ship.fuel > 0).map(updateComposer)
     }
 
 }

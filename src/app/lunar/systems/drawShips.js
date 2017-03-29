@@ -28,14 +28,14 @@ const draw = (scene) => {
                 const halfWidth = ship.width / 2
                 const halfHeigh = ship.height / 2
 
-                ship.jets
+                ship.fuel > 0 && ship.jets
                     .filter(jet => jet.force > 0)
                     .forEach(jet => {
                         const x = jet.dx * halfWidth
                         const y = jet.dy * halfHeigh
 
                         canvas.stroke(255,0,0)
-                        for(var i = 0 ; i < 3 ; i++) {
+                        for(var i = 0 ; i < 1 ; i++) {
                             let jSize = jet.force * 800 + (Math.random() * 20 - 10)
                             if (jet.dy == 0) {
                                 canvas.line(x, y, x + (jSize * jet.dx), y + (Math.random()*20 - 10))

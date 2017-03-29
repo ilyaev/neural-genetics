@@ -13,7 +13,7 @@ const configuration = {
     simulation: {
         lifespan: 250000
     },
-    snakescount: 100,
+    shipscount: 100,
     rightPanel,
     bottomPanel,
     shipWidth: 20,
