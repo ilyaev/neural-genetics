@@ -20,9 +20,12 @@ const updateShips = function(scene) {
 
             let vForce = p5.Vector.sub(new p5.Vector(ship.body.position.x, ship.body.position.y), new p5.Vector(v.x, v.y))
 
+            let vPoint = new p5.Vector(ship.body.position.x + (10 * jet.dx), ship.body.position.y - (1 * jet.dx))
+
             vForce = vForce.setMag(jet.force)
 
-            Matter.Body.applyForce(ship.body, {x: ship.body.position.x, y: ship.body.position.y}, vForce)
+            Matter.Body.applyForce(ship.body, vPoint, vForce)
+            //Matter.Body.rotate(ship.body, 0.3)
         })
         return ship
     }

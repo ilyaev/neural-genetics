@@ -118,12 +118,10 @@ const simulation = (scene) => {
 
         putNewFleet(ships)
 
-        // ReplaceArray(scene.snakes, snakes)
-
         scene.simulation.generation++
 
         scene.simulation.stats.push(Object.assign({}, scene.simulation.last, {winner: theOne}))
-        scene.selection.ship = scene.ships[0]
+        scene.selection.ship = scene.ships.sort((a,b) => a.fitness > b.fitness ? -1 : 1)[0]
     }
 
     const checkCounter = () => {

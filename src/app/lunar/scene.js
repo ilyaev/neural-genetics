@@ -15,14 +15,24 @@ export const initScene = () => {
     scene.selection.ship = scene.ships[0]
 }
 
+let currentTarget = false
+
+export const nextCurrentTarget = () => {
+    currentTarget = new p5.Vector(Math.random() * config.width, config.height - 20)
+}
+
 export const putNewFleet = (ships) => {
+
+    //nextCurrentTarget()
 
     scene.World.remove(scene.world, scene.world.bodies.filter(one => one.label == 'ship'))
 
     ships = ships.map(ship => {
         const net = ship.net
+        const fitness = ship.fitness
         const newShip = buildNewShip(config.center.x, config.center.y * 0.5)
         newShip.net = net
+        newShip.fitness = fitness
         addToWorld(newShip.body)
         return newShip
     })
@@ -123,7 +133,10 @@ const setupShips = () => {
 
 export const buildNewShip = (x, y) => {
     const ship = new Ship(x, y, config.shipWidth, config.shipHeight)
-    ship.target = new p5.Vector(scene.config.center.x * 0.2, scene.config.height - 20)
+    if (!currentTarget) {
+        nextCurrentTarget()
+    }
+    ship.target = currentTarget
     return ship
 }
 

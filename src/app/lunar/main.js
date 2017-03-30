@@ -2,7 +2,7 @@ import p5 from 'p5'
 import p5dom from 'p5/lib/addons/p5.dom'
 import dat from 'dat-gui'
 import config from './config'
-import scene, { addToWorld, updatePhysics,spawnShip } from './scene'
+import scene, { addToWorld, updatePhysics,spawnShip, nextCurrentTarget } from './scene'
 import sceneUpdater from './systems/updateScene'
 import sceneDrawer from './systems/drawScene'
 import mouseSelector from './systems/mouseSelection'
@@ -29,6 +29,7 @@ const sketch = function(p) {
     p.setup = function() {
         p.createCanvas(window.innerWidth, window.innerHeight)
         scene.nnCanvas = p.createGraphics(config.rightPanel.width, 300)
+        scene.genCanvas = p.createGraphics(window.innerWidth, config.bottomPanel.height)
         scene.canvas = p
         Matter.Events.on(scene.engine, 'collisionStart', function (event) {
             event.pairs.forEach(sceneCollider)
@@ -48,6 +49,9 @@ const sketch = function(p) {
 
     p.keyPressed = function(event) {
         switch (event.key) {
+            case 'n':
+                nextCurrentTarget()
+                break
             case 'a':
                 scene.timeScale = scene.timeScale == 1 ? 150 : 1
                 break

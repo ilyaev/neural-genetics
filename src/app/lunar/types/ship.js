@@ -46,7 +46,7 @@ const Jet = (dx, dy) => {
     }
 }
 
-export const LunarNeuralNet = (neuronsPerLevel = 5, hiddenLevels = 2, inputSize = 5) => NeuralNet(
+export const LunarNeuralNet = (neuronsPerLevel = 8, hiddenLevels = 3, inputSize = 5) => NeuralNet(
     inputSize, // Input Size
     hiddenLevels, // Hidden Layers number
     neuronsPerLevel, // Hidden Layer size
@@ -72,7 +72,12 @@ export const calculateFitness = (ship) => {
     const maxDist = p5.Vector.dist(ship.target, new p5.Vector(0,0))
     const dist = p5.Vector.dist(ship.target, new p5.Vector(ship.body.position.x, ship.body.position.y))
     ship.fitness = maxDist - dist
-    ship.fitness -= ship.impact.speed * 30
+    ship.fitness -= ship.impact.speed * (maxDist / 12)
+    ship.fitness -= Math.abs(ship.body.angle) * maxDist
+
+    if (dist > maxDist / 5) {
+        ship.fitness -= maxDist / 2
+    }
     return ship
 }
 
