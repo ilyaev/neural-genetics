@@ -9,9 +9,14 @@ const collide = function(scene) {
         return ship
     }
 
+    const getWall = (pair) => {
+        return [pair.bodyA, pair.bodyB].reduce((result, next) => next.label != 'ship' ? next : result, false)
+    }
+
     return (pair) => {
         const ship = getShip(pair)
-        deactivateShip(ship)
+        const wall = getWall(pair)
+        deactivateShip(ship, wall.label == 'floor')
     }
 
 }

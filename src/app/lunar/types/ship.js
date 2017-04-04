@@ -10,6 +10,7 @@ const Ship = (x, y, width = 20, height = 20) => {
         active: true,
         height,
         net: new LunarNeuralNet(),
+        category: 'noob',
         target: null,
         fuel: 200,
         age: 0,
@@ -46,7 +47,7 @@ const Jet = (dx, dy) => {
     }
 }
 
-export const LunarNeuralNet = (neuronsPerLevel = 8, hiddenLevels = 3, inputSize = 5) => NeuralNet(
+export const LunarNeuralNet = (neuronsPerLevel = 6, hiddenLevels = 1, inputSize = 6) => NeuralNet(
     inputSize, // Input Size
     hiddenLevels, // Hidden Layers number
     neuronsPerLevel, // Hidden Layer size
@@ -69,15 +70,11 @@ export const nearestShip = (population, position) => {
 }
 
 export const calculateFitness = (ship) => {
-    const maxDist = p5.Vector.dist(ship.target, new p5.Vector(0,0))
-    const dist = p5.Vector.dist(ship.target, new p5.Vector(ship.body.position.x, ship.body.position.y))
-    ship.fitness = maxDist - dist
-    ship.fitness -= ship.impact.speed * (maxDist / 12)
-    ship.fitness -= Math.abs(ship.body.angle) * maxDist
+    const dist = p5.Vector.dist(new p5.Vector(ship.target.x, ship.target.y - 40), new p5.Vector(ship.body.position.x, ship.body.position.y))
+    ship.fitness = 100 - dist
+    ship.fitness -= ship.impact.speed * 20
+    ship.fitness -= Math.abs(ship.body.angle) * 35
 
-    if (dist > maxDist / 5) {
-        ship.fitness -= maxDist / 2
-    }
     return ship
 }
 

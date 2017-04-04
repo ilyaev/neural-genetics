@@ -2,6 +2,7 @@ import p5 from 'p5'
 import compose from '../../lib/compose'
 import drawNeuralNet from '../../systems/drawNeuralNet'
 import drawGenetics from './drawGenetics'
+import drawIdPanel from './drawIdPanel'
 
 import shipDrawer from './drawShips'
 import targetDrawer from './drawTarget'
@@ -35,6 +36,9 @@ const draw = function(scene) {
         if (scene.selection.ship) {
             drawNeuralNet(scene.selection.ship.net, '', scene.nnCanvas)
             scene.canvas.image(scene.nnCanvas, scene.config.width, 0)
+
+            drawIdPanel(scene.idCanvas, scene)
+            scene.canvas.image(scene.idCanvas, scene.config.width, scene.nnCanvas.height)
         }
         return canvas
     }

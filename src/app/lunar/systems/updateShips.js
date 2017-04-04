@@ -20,7 +20,7 @@ const updateShips = function(scene) {
 
             let vForce = p5.Vector.sub(new p5.Vector(ship.body.position.x, ship.body.position.y), new p5.Vector(v.x, v.y))
 
-            let vPoint = new p5.Vector(ship.body.position.x + (10 * jet.dx), ship.body.position.y - (1 * jet.dx))
+            let vPoint = new p5.Vector(ship.body.position.x + (10 * jet.dx), ship.body.position.y - (1 * Math.abs(jet.dx)))
 
             vForce = vForce.setMag(jet.force)
 
@@ -32,14 +32,15 @@ const updateShips = function(scene) {
 
     const generateCommand = (ship) => {
 
-        const vToLanding = p5.Vector.sub(new p5.Vector(ship.body.position.x, ship.body.position.y), ship.target).setMag(1)
+        const vToLanding = p5.Vector.sub(ship.target, new p5.Vector(ship.body.position.x, ship.body.position.y)).setMag(1)
 
         const input = [
-            (ship.body.position.x / (scene.config.width / 2)) - 1,
-            (ship.body.position.y / (scene.config.height / 2)) - 1,
-            ((ship.body.angle % 6.28) / (scene.canvas.PI * 2)),
+            scene.canvas.map(ship.body.position.x, 0, scene.config.width, 0, 1),
+            scene.canvas.map(ship.body.position.y, 0, scene.config.height, 0, 1),
             vToLanding.x,
-            vToLanding.y
+            vToLanding.y,
+            scene.canvas.map(ship.fuel, 0, 200, 0, 1),
+            scene.canvas.map(Math.abs(ship.body.angle) % 6.28, 0, 6.28, 0, 1)
         ]
 
         //sdfsdf.sdfsdf()

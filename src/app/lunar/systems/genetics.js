@@ -4,7 +4,7 @@ import NeuralNet, { serializeNet, populateNet } from '../../types/neural'
 import doCrossover from '../../lib/crossover'
 import { replace as ReplaceArray } from '../../lib/array'
 import * as Ship from '../types/ship'
-import { buildNewShip, putNewFleet } from '../scene'
+import { buildNewShip, putNewFleet, nextCurrentTarget } from '../scene'
 
 
 const simulation = (scene) => {
@@ -91,7 +91,7 @@ const simulation = (scene) => {
 
                 doCrossover(mDNA, fDNA, scene.simulation, scene.mutationRate).forEach(offspringDNA => {
                     const offspring = makeNewSnake()
-                    offspring.category = 'D: ' + parentMale.fitness + ' / ' + parentFemale.fitness
+                    offspring.category = 'D: ' + Math.round(parentMale.fitness) + ' / ' + Math.round(parentFemale.fitness)
                     populateNet(offspring.net, offspringDNA)
                     population.push(offspring)
                 })
@@ -109,13 +109,16 @@ const simulation = (scene) => {
         
         const [ships, maxFitness, meanFitness] = getElite()
 
-        scene.simulation.last.maxFitness = maxFitness
+            scene.simulation.last.maxFitness = maxFitness
         scene.simulation.last.meanFitness = meanFitness
         scene.simulation.last.generation = scene.simulation.generation
 
         crossover(ships, maxFitness)
         resupplyWithRandom(ships)
 
+        //if (scene.simulation.generation % 10 == 0) {
+            nextCurrentTarget()
+        //}
         putNewFleet(ships)
 
         scene.simulation.generation++

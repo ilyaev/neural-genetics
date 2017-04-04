@@ -6,6 +6,8 @@ import Boundary from './types/box'
 import { replace } from '../lib/array'
 import p5 from 'p5'
 
+
+
 export const initScene = () => {
     scene.engine = scene.Engine.create()
     scene.world = scene.engine.world
@@ -16,9 +18,15 @@ export const initScene = () => {
 }
 
 let currentTarget = false
+let noiseSeed = 0
 
 export const nextCurrentTarget = () => {
-    currentTarget = new p5.Vector(Math.random() * config.width, config.height - 20)
+    let nX = Math.random() * (config.width - 100) + 50
+    if (scene.canvas) {
+        nX = scene.canvas.map(scene.canvas.noise(noiseSeed),0,1, 50, config.width - 50)
+    }
+    currentTarget = new p5.Vector(nX, config.height - 20)
+    noiseSeed += 0.3
 }
 
 export const putNewFleet = (ships) => {
@@ -30,9 +38,11 @@ export const putNewFleet = (ships) => {
     ships = ships.map(ship => {
         const net = ship.net
         const fitness = ship.fitness
+        const category = ship.category
         const newShip = buildNewShip(config.center.x, config.center.y * 0.5)
         newShip.net = net
         newShip.fitness = fitness
+        newShip.category = category
         addToWorld(newShip.body)
         return newShip
     })
@@ -114,7 +124,7 @@ const setupStatics = () => {
     }
 
     scene.boundaries = [
-        new Boundary(config.center.x, config.height - 20, config.width - 20, 40, commonOpts),
+        new Boundary(config.center.x, config.height - 20, config.width - 20, 40, Object.assign({}, commonOpts, {label: 'floor'})),
         new Boundary(5, config.center.y, 10, config.height, commonOpts),
         new Boundary(config.width - 5, config.center.y, 10, config.height, commonOpts),
         new Boundary(config.center.x, 5, config.width, 10, commonOpts)
@@ -157,11 +167,14 @@ export const removeShip = (ship) => {
     }))
 }
 
-export const deactivateShip = (ship) => {
+export const deactivateShip = (ship, floor = true) => {
+    if (!ship.active) {
+        return
+    }
     ship.fuel = 0
     ship.active = false
     ship.impact = {
-        speed: ship.body.speed
+        speed: floor ? ship.body.speed : 100
     }
     Matter.Sleeping.set(ship.body, true)
 }
