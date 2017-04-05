@@ -11,4 +11,6 @@ yarn run start:hot
 - http://localhost:8080/#lunar - Lunar lander simulation. "A"/"Z"/"V" keys to change speed
 
 ![Food Seekers](/images/ngen_seeker.png "Food Seekers simulation")
+![Snake](/images/ngen_snake.png "Snake simulation")
+![Lunar Lander](/images/ngen_lunar.png "Lunar Lander simulation")
 
