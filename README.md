@@ -10,5 +10,5 @@ yarn run start:hot
 - http://localhost:8080/#snake - Snake game solver. Use control panel to change parameters, speed, etc
 - http://localhost:8080/#lunar - Lunar lander simulation. "A"/"Z"/"V" keys to change speed
 
-[[https://github.com/ilyaev/neural-genetics/blob/master/images/ngen_seeker.png|alt=octocat]]
+[[https://github.com/ilyaev/neural-genetics/blob/master/images/ngen_seeker.png]]
 
