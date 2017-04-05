@@ -3,6 +3,14 @@ import Matter from 'matter-js'
 import { NeuralNet } from '../../types/neural'
 import p5 from 'p5'
 
+export const LunarNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 2, inputSize = 8) => NeuralNet(
+    inputSize, // Input Size
+    hiddenLevels, // Hidden Layers number
+    neuronsPerLevel, // Hidden Layer size
+    3, // Output Size
+    () => Math.random() * 2 - 1
+)
+
 const Ship = (x, y, width = 20, height = 20) => {
     const id = 'sh' + Math.round(Math.random() * 1000000)
     return {
@@ -47,13 +55,6 @@ const Jet = (dx, dy) => {
     }
 }
 
-export const LunarNeuralNet = (neuronsPerLevel = 6, hiddenLevels = 1, inputSize = 6) => NeuralNet(
-    inputSize, // Input Size
-    hiddenLevels, // Hidden Layers number
-    neuronsPerLevel, // Hidden Layer size
-    3, // Output Size
-    () => Math.random() * 2 - 1
-)
 
 export const nearestShip = (population, position) => {
     const nearest = population
@@ -72,8 +73,8 @@ export const nearestShip = (population, position) => {
 export const calculateFitness = (ship) => {
     const dist = p5.Vector.dist(new p5.Vector(ship.target.x, ship.target.y - 40), new p5.Vector(ship.body.position.x, ship.body.position.y))
     ship.fitness = 100 - dist
-    ship.fitness -= ship.impact.speed * 20
-    ship.fitness -= Math.abs(ship.body.angle) * 35
+    ship.fitness -= ship.impact.speed * 10
+    ship.fitness -= Math.abs(ship.body.angle) * 15
 
     return ship
 }

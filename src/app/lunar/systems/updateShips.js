@@ -34,13 +34,18 @@ const updateShips = function(scene) {
 
         const vToLanding = p5.Vector.sub(ship.target, new p5.Vector(ship.body.position.x, ship.body.position.y)).setMag(1)
 
+        //console.log('bosy', ship.body)
+        //sdfsdf.sdfsdf()
+
         const input = [
             scene.canvas.map(ship.body.position.x, 0, scene.config.width, 0, 1),
             scene.canvas.map(ship.body.position.y, 0, scene.config.height, 0, 1),
             vToLanding.x,
             vToLanding.y,
             scene.canvas.map(ship.fuel, 0, 200, 0, 1),
-            scene.canvas.map(Math.abs(ship.body.angle) % 6.28, 0, 6.28, 0, 1)
+            scene.canvas.map(Math.abs(ship.body.angle) % 6.28, 0, 6.28, 0, 1),
+            ship.body.velocity.x / 5,
+            ship.body.velocity.y / 5,
         ]
 
         //sdfsdf.sdfsdf()

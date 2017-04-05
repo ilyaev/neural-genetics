@@ -18,15 +18,25 @@ export const initScene = () => {
 }
 
 let currentTarget = false
+
+let currentStart = {
+    x: config.center.x,
+    y: config.center.y * 0.25
+}
 let noiseSeed = 0
+let startNoise = 50
 
 export const nextCurrentTarget = () => {
     let nX = Math.random() * (config.width - 100) + 50
+    let sX = Math.random() * (config.width - 100) + 50
     if (scene.canvas) {
         nX = scene.canvas.map(scene.canvas.noise(noiseSeed),0,1, 50, config.width - 50)
+        sX = scene.canvas.map(scene.canvas.noise(startNoise),0,1, 50, config.width - 50)
     }
     currentTarget = new p5.Vector(nX, config.height - 20)
+    currentStart = new p5.Vector(sX, config.center.y * 0.1 + config.center.y * Math.random()*0.1)
     noiseSeed += 0.3
+    startNoise += Math.random() * 0.5
 }
 
 export const putNewFleet = (ships) => {
@@ -39,7 +49,7 @@ export const putNewFleet = (ships) => {
         const net = ship.net
         const fitness = ship.fitness
         const category = ship.category
-        const newShip = buildNewShip(config.center.x, config.center.y * 0.5)
+        const newShip = buildNewShip(currentStart.x, currentStart.y)
         newShip.net = net
         newShip.fitness = fitness
         newShip.category = category
