@@ -29,7 +29,7 @@ const crossover = (male, female, meta, mutationRate = 0.1) => {
             childTwo = childTwo.concat(mPart)
             maleFirst = true
         }
-        len = Math.round(Math.random()*(male.length / 2)) + 1
+        //len = Math.round(Math.random()*(male.length / 2)) + 1
     }
     return [childOne, childTwo]
 }

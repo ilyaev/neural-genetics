@@ -38,14 +38,15 @@ const updateShips = function(scene) {
         //sdfsdf.sdfsdf()
 
         const input = [
-            scene.canvas.map(ship.body.position.x, 0, scene.config.width, 0, 1),
-            scene.canvas.map(ship.body.position.y, 0, scene.config.height, 0, 1),
+            scene.canvas.map(ship.body.position.x, 0, scene.config.width, -1, 1),
+            scene.canvas.map(ship.body.position.y, 0, scene.config.height, -1, 1),
             vToLanding.x,
             vToLanding.y,
             scene.canvas.map(ship.fuel, 0, 200, 0, 1),
             scene.canvas.map(Math.abs(ship.body.angle) % 6.28, 0, 6.28, 0, 1),
             ship.body.velocity.x / 5,
             ship.body.velocity.y / 5,
+            1 - (p5.Vector.dist(ship.target, new p5.Vector(ship.body.position.x, ship.body.position.y)) / scene.config.height)
         ]
 
         //sdfsdf.sdfsdf()
@@ -54,7 +55,8 @@ const updateShips = function(scene) {
         const output = calculate(ship.net)
 
         ship.jets.forEach((jet, index) => {
-            const magnitude = index == 2 ? 0.08 : 0.03
+            //const magnitude = index == 2 ? 0.08 : 0.03
+            const magnitude = 0.1
             jet.force = output[index] > 0 ? output[index] * magnitude : 0
             if (jet.force > 0) {
                 ship.fuel -= output[index]

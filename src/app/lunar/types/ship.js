@@ -3,7 +3,7 @@ import Matter from 'matter-js'
 import { NeuralNet } from '../../types/neural'
 import p5 from 'p5'
 
-export const LunarNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 2, inputSize = 8) => NeuralNet(
+export const LunarNeuralNet = (neuronsPerLevel = 7, hiddenLevels = 2, inputSize = 9) => NeuralNet(
     inputSize, // Input Size
     hiddenLevels, // Hidden Layers number
     neuronsPerLevel, // Hidden Layer size
@@ -75,7 +75,9 @@ export const calculateFitness = (ship) => {
     ship.fitness = 100 - dist
     ship.fitness -= ship.impact.speed * 10
     ship.fitness -= Math.abs(ship.body.angle) * 15
-
+    if (dist > 100) {
+        ship.fitness -= 500
+    }
     return ship
 }
 

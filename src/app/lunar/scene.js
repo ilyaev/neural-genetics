@@ -102,7 +102,7 @@ const scene = {
     Render: Matter.Render,
     World: Matter.World,
     Bodies: Matter.Bodies,
-    mutationRate: 0.1,
+    mutationRate: 0.3,
     eliteRate: 0.2,
     randomRate: 0.05,
     simulation: {
