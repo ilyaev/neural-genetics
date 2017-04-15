@@ -2,12 +2,13 @@ import * as Reducers from '../lib/reducers'
 
 const concatWeightToArray = Reducers.concatKeyToArray('weight')
 const concatSynapsesToArray = Reducers.concatKeyToArray('synapses')
+const concatBiasToArray = Reducers.concatKeyToArray('bias')
 
 const Neuron = (value = 0, synapses = [], bias = 1) => {
     return {
         value,
         rawValue: value,
-        bias,
+        bias: Math.random() * 2 - 1,
         synapses
     }
 }
@@ -64,9 +65,7 @@ export const setNetInputValues = (net, input) => {
 }
 
 export const calculateNeuronValue = (neuron) => {
-    //const shift = (5 / (neuron.synapses.length + 1))
-    const shift = 1
-    neuron.rawValue = neuron.bias + neuron.synapses.reduce((sum, next) => sum + next.weight * next.input.value * shift, 0)
+    neuron.rawValue = neuron.bias + neuron.synapses.reduce((sum, next) => sum + next.weight * next.input.value, 0)
     neuron.value = tanh(neuron.rawValue)
 }
 
@@ -78,19 +77,28 @@ export const calculateNetOutput = (net) => {
 }
 
 export const serializeNet = (net) => {
-    return [
+
+    const neurons = [
         net.hidden.reduce(Reducers.concatToArray, []),
         net.output
     ]
     .reduce(Reducers.concatToArray, [])
-    .reduce(concatSynapsesToArray, [])
-    .reduce(concatWeightToArray, [])
+
+    return neurons
+            .reduce(concatSynapsesToArray, [])
+            .reduce(concatWeightToArray, [])
+            .concat(neurons
+                .reduce(concatBiasToArray, [])
+            )
 }
 
 export const populateNet = (net, data) => {
 
     net.hidden.forEach(layer => layer.forEach(node => node.synapses.forEach(synapse => synapse.weight = data.shift())))
     net.output.forEach(node => node.synapses.forEach(synapse => synapse.weight = data.shift()))
+
+    net.hidden.forEach(layer => layer.forEach(node => node.bias = data.shift()))
+    net.output.forEach(node => node.bias = data.shift())
 
     return net
 }
