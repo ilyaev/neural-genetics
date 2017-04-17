@@ -8,6 +8,8 @@ const Agent = (x, y) => {
             dx: 0,
             dy: 0
         },
+        action: false,
+        state: false,
         cell: false
     }
 }

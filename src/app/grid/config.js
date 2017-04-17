@@ -1,5 +1,5 @@
 const configuration = {
-    cellSize: 50,
+    cellSize: 200,
     width: window.innerWidth,
     height: window.innerHeight,
     center: {
