@@ -43,7 +43,7 @@ const draw = function(scene) {
         canvas.rect(nX, nY, config.cellSize, config.cellSize)
 
         canvas.fill(0)
-        canvas.text(maxAction.reward.toFixed(2) + ' / ' + maxAction.tag, nX + 10, nY + 30)
+        canvas.text(maxAction.reward.toFixed(2), nX + 10, nY + 30)
 
         if (Math.abs(state.reward) != 1) {
             let dir = 0
@@ -94,7 +94,7 @@ const draw = function(scene) {
 
     const drawComposer = compose(
         drawDebug,
-        drawAgent,
+        //drawAgent,
         drawGrid,
         setup
     )

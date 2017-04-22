@@ -3,6 +3,7 @@ import SnakeSketch from './snake/main'
 import LunarSketch from './lunar/main'
 import DroneSketch from './drone/main'
 import GridSketch from './grid/main'
+import BackSketch from './backprop/main'
 
 const target = document.getElementById('app')
 
@@ -22,6 +23,9 @@ window.onload = () => {
             break
         case 'grid':
             demo = new GridSketch(target)
+            break
+        case 'backprop':
+            demo = new BackSketch(target)
             break
         default:
             demo = new Sketch(target)

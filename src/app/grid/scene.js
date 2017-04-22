@@ -7,7 +7,7 @@ import curry from '../lib/curry'
 
 const scene = {
     active: true,
-    timeScale: 100,
+    timeScale: 1,
     cells: [],
     cellMap: {},
     agent: false,
@@ -42,7 +42,7 @@ const initScene = () => {
             scene.cells.push(cell)
             scene.cellMap[cellHash(cell)] = cell
             const state = new State(cell.x, cell.y)
-            state.reward = -0.1
+            state.reward = -0.05
             Actions.forEach(one => {
                 const action = new Action(one.tag, one, 0)
                 updateAction(state, action)
@@ -52,10 +52,12 @@ const initScene = () => {
         }
     }
     
-    getState(genStateTag(scene.maxX, scene.maxY)).reward = 1
-    getState(genStateTag(scene.maxX, scene.maxY - 1)).reward = -1
-    getState(genStateTag(2,scene.maxY)).reward = -1
-    getState(genStateTag(2,scene.maxY - 1)).reward = -1
+    getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = 1
+    getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = -1
+    getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = 1
+    getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = -1
+    //getState(genStateTag(scene.maxX, scene.maxY)).reward = 1
+    //getState(genStateTag(scene.maxX, scene.maxY - 1)).reward = -1
 
     scene.agent = new Agent(1,1)
     scene.agent.cell = getCellByXY(0,0)
