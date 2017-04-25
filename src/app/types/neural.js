@@ -52,11 +52,17 @@ export const NeuralNet = (inputSize = 3, hiddenLayers = 1, hiddenLayersSize = 3,
     }
 }
 
-export const sigmoid = (z) => {
-  return 1 / (1 + Math.exp(-z))
+export const sigmoid = (z, prime = false) => {
+    if (prime) {
+        return z * (1 - z)
+    }
+    return 1 / (1 + Math.exp(-z))
 }
 
-export const tanh = (z) => {
+export const tanh = (z, prime = false) => {
+    if (prime) {
+        return 1 - (z * z)
+    }
     return (2 / (1 + Math.exp(-2*z))) - 1
 }
 
@@ -101,6 +107,68 @@ export const populateNet = (net, data) => {
     net.output.forEach(node => node.bias = data.shift())
 
     return net
+}
+
+export const calculateErrors = (net, expected, actual) => {
+    net.output.forEach((node, i) => {
+        node.error = (expected[i] - actual[i]) * sigmoid(actual[i], true)
+    })
+
+    net.hidden[0].forEach((node, i) => {
+        let sum = 0
+        net.output.forEach((out, k) => {
+            sum += out.synapses[i].weight * out.error
+        })
+        node.error = sigmoid(node.value, true) * sum
+    })
+}
+
+export const calculateGlobalError = (net, expected, actual) => {
+    let result = 0
+    expected.forEach((target, i) => result += Math.pow(target - actual[i], 2) * 0.5)
+    return result
+}
+
+export const backPropagateError = (net) => {
+
+    const learningRate = 0.1
+
+    net.output.forEach(node => {
+        node.bias += node.error
+        node.synapses.forEach(synapse => synapse.weight += node.error * synapse.input.value * learningRate)
+    })
+    net.hidden[0].forEach(node => {
+        node.bias += node.error
+        node.synapses.forEach(synapse => {
+            synapse.weight += node.error * synapse.input.value * learningRate
+        })
+    })
+}
+
+export const trainNetworks = (net, inputs, expected, options = {}) => {
+    options = Object.apply({
+        epoch: 20000,
+        error: 0.0005
+    }, options)
+
+    let globalError = 1
+    let epoch = 0
+    let limitEpoch = options.epoch
+    let limitError = options.error
+
+    while(epoch < limitEpoch && globalError > limitError) {
+        globalError = 0
+        inputs.forEach((state, index) => {
+            setNetInputValues(net, state)
+            const output = calculateNetOutput(net).map(one => one.value)
+            calculateErrors(net, expected[index], output)
+            backPropagateError(net)
+            globalError += calculateGlobalError(net, expected[index], output)
+        })
+        epoch += 1
+    }
+    
+    return epoch >= limitEpoch ? false : true
 }
 
 const RandomWeightNeuralNet = () => NeuralNet(

@@ -1,12 +1,12 @@
 
-const drawNeuralNet = (net, caption, canvas) => {
+const drawNeuralNet = (net, caption, canvas, delay = 10) => {
     if (typeof canvas.counter == 'undefined') {
         canvas.counter = -1
     }
 
     canvas.counter++
 
-    if (canvas.counter < 10 && canvas.counter > 0) {
+    if (canvas.counter < delay && canvas.counter > 0) {
         return
     }
 

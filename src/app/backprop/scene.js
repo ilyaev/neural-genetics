@@ -5,18 +5,17 @@ import {XORNet} from './types/neural'
 const scene = {
     active: true,
     net: new XORNet(),
-    timeScale: 1,
+    timeScale: 100,
+    calculated: false,
     batch: [
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1],
-        // [0.5, 0.5],
-        // [0.3, 0.3],
-        // [0.2, 0.2]
+        [0,0],
+        [1,1],
+        [0.5, 0.5]
     ],
     goals: [
-        0, 1, 1, 0, 1, 0, 1
+        [1,1],
+        [0,0],
+        [0.15, 0.5]
     ],
     epoch: 0
 }

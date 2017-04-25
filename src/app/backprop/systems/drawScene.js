@@ -1,6 +1,7 @@
 import p5 from 'p5'
 import compose from '../../lib/compose'
 import drawNeuralNet from '../../systems/drawNeuralNet'
+import { XORNet } from '../types/neural'
 
 const draw = function(scene) {
 
@@ -12,8 +13,9 @@ const draw = function(scene) {
     }
 
     const drawNN = (canvas) => {
-        drawNeuralNet(scene.net, '', scene.nnCanvas)
+        drawNeuralNet(scene.net, '', scene.nnCanvas, 1)
         scene.canvas.image(scene.nnCanvas, 0, 0)
+        scene.net = new XORNet()
         return canvas
     }
 

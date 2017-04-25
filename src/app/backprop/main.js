@@ -15,6 +15,7 @@ const sketch = function(p) {
         p.createCanvas(window.innerWidth, window.innerHeight)
         scene.canvas = p
         scene.nnCanvas = p.createGraphics(window.innerWidth, window.innerHeight)
+        p.frameRate(60)
     }
 
     p.draw = function() {

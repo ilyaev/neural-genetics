@@ -83,21 +83,61 @@ export const calculateNetOutput = (net) => {
     return net.output
 }
 
-export const adjustNetWeights = (net, globalError) => {
-    net.output.forEach(node => {
-        node.error = globalError
-        node.bias += globalError
-        node.synapses.forEach(synapse => {
-            synapse.weight += node.error * synapse.input.value
-        })
+export const calculateErrors = (net, expected, actual) => {
+    net.output.forEach((node, i) => {
+        node.error = (expected[i] - actual[i]) * sigmoid(actual[i], true)
     })
-    net.hidden[0].forEach((node, index) => {
-        node.error = sigmoid(node.value, true) * globalError * net.output[0].synapses[index].weight
+
+    net.hidden[0].forEach((node, i) => {
+        let sum = 0
+        net.output.forEach((out, k) => {
+            sum += out.synapses[i].weight * out.error
+        })
+        node.error = sigmoid(node.value, true) * sum
+    })
+}
+
+export const calculateGlobalError = (net, expected, actual) => {
+    let result = 0
+    expected.forEach((target, i) => result += Math.pow(target - actual[i], 2) * 0.5)
+    return result
+}
+
+export const backPropagateError = (net) => {
+
+    const learningRate = 0.1
+
+    net.output.forEach(node => {
+        node.bias += node.error
+        node.synapses.forEach(synapse => synapse.weight += node.error * synapse.input.value * learningRate)
+    })
+    net.hidden[0].forEach(node => {
         node.bias += node.error
         node.synapses.forEach(synapse => {
-            synapse.weight += node.error * synapse.input.value
+            synapse.weight += node.error * synapse.input.value * learningRate
         })
     })
+}
+
+export const train = (net, inputs, expected) => {
+    let globalError = 1
+    let epoch = 0
+    let limitEpoch = 20000
+    let limitError = 0.005
+
+    while(epoch < limitEpoch && globalError > limitError) {
+        globalError = 0
+        inputs.forEach((state, index) => {
+            setNetInputValues(net, state)
+            const output = calculateNetOutput(net).map(one => one.value)
+            calculateErrors(net, expected[index], output)
+            backPropagateError(net)
+            globalError += calculateGlobalError(net, expected[index], output)
+        })
+        epoch += 1
+    }
+    
+    return epoch >= limitEpoch ? false : true
 }
 
 export const serializeNet = (net) => {
@@ -128,7 +168,7 @@ export const populateNet = (net, data) => {
 }
 
 export const XORNet = () => NeuralNet(
-    2,1,5,1, () => Math.random() * 2 - 1
+    2,1,5,2, () => Math.random() * 2 - 1
 )
 
 export default NeuralNet

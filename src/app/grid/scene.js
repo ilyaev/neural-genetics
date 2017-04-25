@@ -4,6 +4,7 @@ import State, { updateAction, genStateTag } from './types/state'
 import Action, { Actions } from './types/action'
 import Agent from './types/agent'
 import curry from '../lib/curry'
+import { NeuralNet, calculateNetOutput } from '../types/neural'
 
 const scene = {
     active: true,
@@ -15,6 +16,7 @@ const scene = {
     maxY: 0,
     config,
     states: [],
+    net: new NeuralNet(2, 1, 7, 4, () => Math.random() * 2 - 1),
     stateMap: {}
 }
 
@@ -56,8 +58,6 @@ const initScene = () => {
     getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = -1
     getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = 1
     getState(genStateTag(Math.round(Math.random() * scene.maxX), Math.round(Math.random()*scene.maxY))).reward = -1
-    //getState(genStateTag(scene.maxX, scene.maxY)).reward = 1
-    //getState(genStateTag(scene.maxX, scene.maxY - 1)).reward = -1
 
     scene.agent = new Agent(1,1)
     scene.agent.cell = getCellByXY(0,0)
